@@ -86,11 +86,9 @@ Lưu các món cụ thể trong từng đơn hàng cùng giá bán tại thời 
   - `3`: Hủy
 - **Tài khoản mẫu**:
   - Tài khoản admin: `admin` / `123` (với `role` = 1)
-  - Tài khoản người dùng: `user1` / `123` (id = 2), `user2` / `123` (id = 3) (với `role` = 0)
-- **Dữ liệu mẫu khởi tạo** (hàm `themDuLieuMau()` trong `MainActivity`, chỉ chạy khi `tbluser` rỗng):
-  - Tối thiểu 3 danh mục (hiện có 4: Trà sữa, Cà phê, Nước ép - Sinh tố, Ăn vặt)
-  - Tối thiểu 15 món (hiện có 16)
-  - `user1` có sẵn 1 món trong giỏ và 2 đơn hàng (1 đơn hoàn thành, 1 đơn chờ)
+- **Dữ liệu mẫu khởi tạo**:
+  - Tối thiểu 3 danh mục
+  - Tối thiểu 15 món
 
 ---
 
