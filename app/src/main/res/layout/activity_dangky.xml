@@ -17,7 +17,7 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/edtusername"
+        android:id="@+id/editusername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -25,28 +25,28 @@
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/edtpassword"
+        android:id="@+id/editpassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Mật khẩu"
         android:inputType="textPassword" />
 
     <EditText
-        android:id="@+id/edtnhaplaipassword"
+        android:id="@+id/editnhaplaipassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Nhập lại mật khẩu"
         android:inputType="textPassword" />
 
     <EditText
-        android:id="@+id/edtfullname"
+        android:id="@+id/editfullname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Họ và tên"
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/edtphone"
+        android:id="@+id/editphone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Số điện thoại"

@@ -16,7 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
-    EditText edtusername, edtpassword;
+    EditText editusername, editpassword;
     Button btndangnhap, btndangky;
     SQLiteDatabase mydatabase;
 
@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        edtusername = findViewById(R.id.edtusername);
-        edtpassword = findViewById(R.id.edtpassword);
+        editusername = findViewById(R.id.editusername);
+        editpassword = findViewById(R.id.editpassword);
         btndangnhap = findViewById(R.id.btndangnhap);
         btndangky = findViewById(R.id.btndangky);
 
@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void dangNhap() {
-        String username = edtusername.getText().toString().trim();
-        String password = edtpassword.getText().toString().trim();
+        String username = editusername.getText().toString().trim();
+        String password = editpassword.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập tên đăng nhập và mật khẩu", Toast.LENGTH_SHORT).show();
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("goi", bundle);
         startActivity(intent);
 
-        edtpassword.setText("");
+        editpassword.setText("");
         Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
     }
 

@@ -15,7 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class DangKyActivity extends AppCompatActivity {
-    EditText edtusername, edtpassword, edtnhaplaipassword, edtfullname, edtphone;
+    EditText editusername, editpassword, editnhaplaipassword, editfullname, editphone;
     Button btndangky, btnquaylai;
     SQLiteDatabase mydatabase;
 
@@ -25,11 +25,11 @@ public class DangKyActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_dangky);
 
-        edtusername = findViewById(R.id.edtusername);
-        edtpassword = findViewById(R.id.edtpassword);
-        edtnhaplaipassword = findViewById(R.id.edtnhaplaipassword);
-        edtfullname = findViewById(R.id.edtfullname);
-        edtphone = findViewById(R.id.edtphone);
+        editusername = findViewById(R.id.editusername);
+        editpassword = findViewById(R.id.editpassword);
+        editnhaplaipassword = findViewById(R.id.editnhaplaipassword);
+        editfullname = findViewById(R.id.editfullname);
+        editphone = findViewById(R.id.editphone);
         btndangky = findViewById(R.id.btndangky);
         btnquaylai = findViewById(R.id.btnquaylai);
 
@@ -57,11 +57,11 @@ public class DangKyActivity extends AppCompatActivity {
     }
 
     private void dangKy() {
-        String username = edtusername.getText().toString().trim();
-        String password = edtpassword.getText().toString().trim();
-        String nhaplai = edtnhaplaipassword.getText().toString().trim();
-        String fullname = edtfullname.getText().toString().trim();
-        String phone = edtphone.getText().toString().trim();
+        String username = editusername.getText().toString().trim();
+        String password = editpassword.getText().toString().trim();
+        String nhaplai = editnhaplaipassword.getText().toString().trim();
+        String fullname = editfullname.getText().toString().trim();
+        String phone = editphone.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty() || nhaplai.isEmpty() || fullname.isEmpty() || phone.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
