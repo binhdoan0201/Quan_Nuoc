@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
+        // Tự động tạo toàn bộ bảng và nạp dữ liệu mẫu
+        DatabaseHelper.khoiTaoDuLieu(mydatabase);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
