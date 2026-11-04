@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class AdminActivity extends AppCompatActivity {
+    //Bước 1: Khai báo biến giao diện
     TextView txtxinchao;
     Button btnquanlymon, btnquanlydanhmuc, btnquanlydon, btnquaylai;
     SQLiteDatabase mydatabase;
@@ -27,51 +28,53 @@ public class AdminActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin);
 
+        //Bước 2: Ánh xạ biến giao diện
         txtxinchao = findViewById(R.id.txtxinchao);
         btnquanlymon = findViewById(R.id.btnquanlymon);
         btnquanlydanhmuc = findViewById(R.id.btnquanlydanhmuc);
         btnquanlydon = findViewById(R.id.btnquanlydon);
         btnquaylai = findViewById(R.id.btnquaylai);
 
+        //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
 
-        Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("goi");
+        Bundle bundle = getIntent().getBundleExtra("goi");
         if (bundle != null) {
             userid = bundle.getInt("userid");
             role = bundle.getInt("role");
         }
         if (role != 1) {
-            Toast.makeText(this, "Bạn không có quyền truy cập trang quản trị", Toast.LENGTH_SHORT).show();
+            String msg = "Bạn không có quyền truy cập trang quản trị";
+            Toast.makeText(AdminActivity.this, msg, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-
-        Cursor c = mydatabase.rawQuery("SELECT fullname FROM tbluser WHERE id = ?",
-                new String[]{String.valueOf(userid)});
-        if (c.moveToFirst()) {
-            txtxinchao.setText("Xin chào, " + c.getString(0));
-        }
-        c.close();
+        hienXinChao();
 
         btnquanlymon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moManHinh(QuanLyMonActivity.class);
+                Intent myIntent = new Intent(AdminActivity.this, QuanLyMonActivity.class);
+                myIntent.putExtra("goi", taoGoi());
+                startActivity(myIntent);
             }
         });
 
         btnquanlydanhmuc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moManHinh(QuanLyDanhMucActivity.class);
+                Intent myIntent = new Intent(AdminActivity.this, QuanLyDanhMucActivity.class);
+                myIntent.putExtra("goi", taoGoi());
+                startActivity(myIntent);
             }
         });
 
         btnquanlydon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moManHinh(QuanLyDonActivity.class);
+                Intent myIntent = new Intent(AdminActivity.this, QuanLyDonActivity.class);
+                myIntent.putExtra("goi", taoGoi());
+                startActivity(myIntent);
             }
         });
 
@@ -89,12 +92,20 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-    private void moManHinh(Class<?> manHinh) {
-        Intent intent = new Intent(AdminActivity.this, manHinh);
+    private void hienXinChao() {
+        Cursor c = mydatabase.query("tbluser", null, "id = ?",
+                new String[]{String.valueOf(userid)}, null, null, null);
+        if (c.getCount() > 0) {
+            c.moveToFirst();
+            txtxinchao.setText("Xin chào, " + c.getString(3));
+        }
+        c.close();
+    }
+
+    private Bundle taoGoi() {
         Bundle bundle = new Bundle();
         bundle.putInt("userid", userid);
         bundle.putInt("role", role);
-        intent.putExtra("goi", bundle);
-        startActivity(intent);
+        return bundle;
     }
 }
