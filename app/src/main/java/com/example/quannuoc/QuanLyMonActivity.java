@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class QuanLyMonActivity extends AppCompatActivity {
-    //Bước 1: Khai báo biến giao diện
+    // Bước 1: Khai báo biến giao diện
     Button btnquaylai;
     SQLiteDatabase mydatabase;
 
@@ -22,10 +22,10 @@ public class QuanLyMonActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quanlymon);
 
-        //Bước 2: Ánh xạ biến giao diện
+        // Bước 2: Ánh xạ biến giao diện
         btnquaylai = findViewById(R.id.btnquaylai);
 
-        //Bước 3: Viết code xử lý
+        // Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
 
         btnquaylai.setOnClickListener(new View.OnClickListener() {

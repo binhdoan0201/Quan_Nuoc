@@ -12,13 +12,40 @@
         android:id="@+id/txttieude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quản trị"
+        android:text="Trang quản trị"
         android:textSize="22sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtxinchao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="Xin chào" />
+
+    <Button
+        android:id="@+id/btnquanlymon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QUẢN LÝ MÓN" />
+
+    <Button
+        android:id="@+id/btnquanlydanhmuc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QUẢN LÝ DANH MỤC" />
+
+    <Button
+        android:id="@+id/btnquanlydon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QUẢN LÝ ĐƠN HÀNG" />
 
     <Button
         android:id="@+id/btnquaylai"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="QUAY LẠI" />
+        android:layout_marginTop="16dp"
+        android:text="ĐĂNG XUẤT" />
 </LinearLayout>
