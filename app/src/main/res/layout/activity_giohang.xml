@@ -1,24 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".GioHangActivity">
+    android:padding="16dp">
 
     <TextView
-        android:id="@+id/txttieude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Giỏ hàng"
+        android:text="GIỎ HÀNG CỦA BẠN"
         android:textSize="22sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="12dp" />
 
-    <Button
-        android:id="@+id/btnquaylai"
+    <ListView
+        android:id="@+id/lvgiohang"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/txttongtien"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="QUAY LẠI" />
+        android:text="Tổng tiền: 0 đ"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#D32F2F"
+        android:gravity="end"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnquaylai"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="QUAY LẠI" />
+
+        <Button
+            android:id="@+id/btndathang"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="ĐẶT HÀNG" />
+    </LinearLayout>
+
 </LinearLayout>
