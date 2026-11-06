@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(MainActivity.this, DangKyActivity.class);
-                startActivity(myIntent);
+                startActivityForResult(myIntent, 100);
             }
         });
 
@@ -63,6 +63,19 @@ public class MainActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+            String registeredUsername = data.getStringExtra("registered_username");
+            if (registeredUsername != null && !registeredUsername.isEmpty()) {
+                editusername.setText(registeredUsername);
+                editpassword.setText("");
+                editpassword.requestFocus();
+            }
+        }
     }
 
     private void dangNhap() {
