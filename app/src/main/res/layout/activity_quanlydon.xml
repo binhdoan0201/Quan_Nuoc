@@ -14,7 +14,22 @@
         android:layout_height="wrap_content"
         android:text="Quản lý đơn hàng"
         android:textSize="22sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chạm vào một đơn hàng để đổi trạng thái"
+        android:textStyle="italic"
+        android:layout_marginBottom="8dp" />
+
+    <ListView
+        android:id="@+id/lvdonhang"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/btnquaylai"
