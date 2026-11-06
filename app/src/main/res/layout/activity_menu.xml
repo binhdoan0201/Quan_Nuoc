@@ -16,6 +16,55 @@
         android:textSize="22sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/txtxinchao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xin chào" />
+
+    <Spinner
+        android:id="@+id/spdanhmuc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edittimkiem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Tìm món..."
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btntim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TÌM" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvmon"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btngiohang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GIỎ HÀNG" />
+
+    <Button
+        android:id="@+id/btnlichsu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LỊCH SỬ ĐƠN HÀNG" />
+
     <Button
         android:id="@+id/btnquaylai"
         android:layout_width="match_parent"
