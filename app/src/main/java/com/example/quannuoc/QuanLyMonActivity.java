@@ -66,17 +66,22 @@ public class QuanLyMonActivity extends AppCompatActivity {
     // Adapter tuỳ chỉnh để hiển thị món trên 2 dòng
     class MonAdapter extends ArrayAdapter<Mon> {
         public MonAdapter(Context context, List<Mon> objects) {
-            super(context, android.R.layout.simple_list_item_2, objects);
+            super(context, 0, objects);
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-            TextView text1 = view.findViewById(android.R.id.text1);
-            TextView text2 = view.findViewById(android.R.id.text2);
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, parent, false);
+            }
+            TextView text1 = convertView.findViewById(android.R.id.text1);
+            TextView text2 = convertView.findViewById(android.R.id.text2);
             Mon m = getItem(position);
-            text1.setText(m.tenmon);
-            text2.setText("Giá: " + dinhDangTien(m.gia) + " - Danh mục: " + m.tendm);
-            return view;
+            if (m != null) {
+                text1.setText(m.tenmon);
+                String tenDanhMuc = (m.tendm != null && !m.tendm.isEmpty()) ? m.tendm : "Chưa phân loại";
+                text2.setText("Giá: " + dinhDangTien(m.gia) + " - Danh mục: " + tenDanhMuc);
+            }
+            return convertView;
         }
     }
 

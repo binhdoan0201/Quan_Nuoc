@@ -1,6 +1,5 @@
 package com.example.quannuoc;
 
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -46,26 +46,29 @@ public class QuanLyDonActivity extends AppCompatActivity {
     // Adapter hiển thị thông tin 2 dòng cho danh sách đơn hàng
     class DonHangAdapter extends ArrayAdapter<DonHang> {
         public DonHangAdapter(Context context, List<DonHang> objects) {
-            super(context, android.R.layout.simple_list_item_2, objects);
+            super(context, 0, objects);
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-            TextView text1 = view.findViewById(android.R.id.text1);
-            TextView text2 = view.findViewById(android.R.id.text2);
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, parent, false);
+            }
+            TextView text1 = convertView.findViewById(android.R.id.text1);
+            TextView text2 = convertView.findViewById(android.R.id.text2);
             DonHang d = getItem(position);
-            
-            text1.setText("Đơn hàng #" + d.id + " - Ngày: " + d.ngaydat);
-            
-            // Xử lý chuỗi trạng thái
-            String strTrangThai = "";
-            if (d.trangthai == 0) strTrangThai = "Chờ xác nhận";
-            else if (d.trangthai == 1) strTrangThai = "Đang làm";
-            else if (d.trangthai == 2) strTrangThai = "Hoàn thành";
-            else if (d.trangthai == 3) strTrangThai = "Đã hủy";
-            
-            text2.setText("Tổng tiền: " + dinhDangTien(d.tongtien) + " - " + strTrangThai);
-            return view;
+            if (d != null) {
+                text1.setText("Đơn hàng #" + d.id + " - Ngày: " + d.ngaydat);
+                
+                // Xử lý chuỗi trạng thái
+                String strTrangThai = "";
+                if (d.trangthai == 0) strTrangThai = "Chờ xác nhận";
+                else if (d.trangthai == 1) strTrangThai = "Đang làm";
+                else if (d.trangthai == 2) strTrangThai = "Hoàn thành";
+                else if (d.trangthai == 3) strTrangThai = "Đã hủy";
+                
+                text2.setText("Tổng tiền: " + dinhDangTien(d.tongtien) + " - " + strTrangThai);
+            }
+            return convertView;
         }
     }
 
