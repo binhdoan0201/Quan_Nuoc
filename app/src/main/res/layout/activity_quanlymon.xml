@@ -5,89 +5,146 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="12dp"
     tools:context=".QuanLyMonActivity">
 
     <TextView
         android:id="@+id/txttieude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quản lý món"
-        android:textSize="22sp"
+        android:text="QUẢN LÝ MÓN"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
-
-    <EditText
-        android:id="@+id/edittenmon"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Tên món"
+        android:gravity="center"
         android:layout_marginBottom="8dp" />
 
-    <EditText
-        android:id="@+id/editmota"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Mô tả"
-        android:layout_marginBottom="8dp" />
-
-    <EditText
-        android:id="@+id/editgia"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Giá (VNĐ)"
-        android:inputType="number"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Danh mục:" />
-
-    <Spinner
-        android:id="@+id/spdanhmuc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp" />
-
+    <!-- Hàng 1: Tên món và Giá -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="4dp">
+
+        <EditText
+            android:id="@+id/edittenmon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="42dp"
+            android:layout_weight="3"
+            android:hint="Tên món"
+            android:textSize="13sp"
+            android:singleLine="true"
+            android:layout_marginEnd="6dp" />
+
+        <EditText
+            android:id="@+id/editgia"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="42dp"
+            android:layout_weight="2"
+            android:hint="Giá (VNĐ)"
+            android:inputType="number"
+            android:textSize="13sp"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <!-- Hàng 2: Mô tả món -->
+    <EditText
+        android:id="@+id/editmota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="42dp"
+        android:hint="Mô tả món"
+        android:textSize="13sp"
+        android:singleLine="true"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Hàng 3: Danh mục món kết hợp bộ lọc -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="6dp">
+
+        <TextView
+            android:id="@+id/txtdanhmuc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Danh mục / Lọc:"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:layout_marginEnd="8dp" />
+
+        <Spinner
+            android:id="@+id/spdanhmuc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!-- Hàng 4: 4 Nút chức năng Thêm - Sửa - Xóa - Làm mới -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
 
         <Button
             android:id="@+id/btnthem"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:minHeight="40dp"
             android:layout_weight="1"
-            android:text="Thêm" />
+            android:text="Thêm"
+            android:textSize="12sp"
+            android:layout_marginEnd="2dp" />
 
         <Button
             android:id="@+id/btnsua"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:minHeight="40dp"
             android:layout_weight="1"
-            android:text="Sửa" />
+            android:text="Sửa"
+            android:textSize="12sp"
+            android:layout_marginEnd="2dp" />
 
         <Button
             android:id="@+id/btnxoa"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:minHeight="40dp"
             android:layout_weight="1"
-            android:text="Xóa" />
+            android:text="Xóa"
+            android:textSize="12sp"
+            android:layout_marginEnd="2dp" />
+
+        <Button
+            android:id="@+id/btnlammoi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            android:layout_weight="1"
+            android:text="Làm mới"
+            android:textSize="12sp" />
     </LinearLayout>
 
+    <!-- Danh sách món: Chiếm trọn không gian còn lại của màn hình -->
     <ListView
         android:id="@+id/lvdanhsach"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="16dp" />
+        android:dividerHeight="1dp"
+        android:layout_marginBottom="8dp" />
 
     <Button
         android:id="@+id/btnquaylai"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="QUAY LẠI" />
+        android:minHeight="42dp"
+        android:text="QUAY LẠI"
+        android:textSize="13sp" />
 </LinearLayout>

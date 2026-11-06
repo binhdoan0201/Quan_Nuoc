@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -29,7 +31,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
     EditText edittenmon, editmota, editgia;
     Spinner spdanhmuc;
-    Button btnthem, btnsua, btnxoa, btnquaylai;
+    Button btnthem, btnsua, btnxoa, btnlammoi, btnquaylai;
     ListView lvdanhsach;
     SQLiteDatabase mydatabase;
 
@@ -39,18 +41,21 @@ public class QuanLyMonActivity extends AppCompatActivity {
     ArrayList<Mon> listMon;
     MonAdapter adapterMon;
     int selectedId = -1;
+    boolean isUpdatingFromList = false;
 
     // Lớp mô hình danh mục
     class DanhMuc {
         int id;
         String tendm;
-        public DanhMuc(int id, String tendm) { 
-            this.id = id; 
-            this.tendm = tendm; 
+
+        public DanhMuc(int id, String tendm) {
+            this.id = id;
+            this.tendm = tendm;
         }
-        @Override 
-        public String toString() { 
-            return tendm; 
+
+        @Override
+        public String toString() {
+            return tendm;
         }
     }
 
@@ -58,8 +63,14 @@ public class QuanLyMonActivity extends AppCompatActivity {
     class Mon {
         int id, gia, madm;
         String tenmon, mota, tendm;
+
         public Mon(int id, String tenmon, String mota, int gia, int madm, String tendm) {
-            this.id = id; this.tenmon = tenmon; this.mota = mota; this.gia = gia; this.madm = madm; this.tendm = tendm;
+            this.id = id;
+            this.tenmon = tenmon;
+            this.mota = mota;
+            this.gia = gia;
+            this.madm = madm;
+            this.tendm = tendm;
         }
     }
 
@@ -68,6 +79,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
         public MonAdapter(Context context, List<Mon> objects) {
             super(context, 0, objects);
         }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
@@ -78,8 +90,9 @@ public class QuanLyMonActivity extends AppCompatActivity {
             Mon m = getItem(position);
             if (m != null) {
                 text1.setText(m.tenmon);
+                text1.setTypeface(null, Typeface.BOLD);
                 String tenDanhMuc = (m.tendm != null && !m.tendm.isEmpty()) ? m.tendm : "Chưa phân loại";
-                text2.setText("Giá: " + dinhDangTien(m.gia) + " - Danh mục: " + tenDanhMuc);
+                text2.setText("Giá: " + dinhDangTien(m.gia) + "  |  Danh mục: " + tenDanhMuc);
             }
             return convertView;
         }
@@ -99,13 +112,14 @@ public class QuanLyMonActivity extends AppCompatActivity {
         btnthem = findViewById(R.id.btnthem);
         btnsua = findViewById(R.id.btnsua);
         btnxoa = findViewById(R.id.btnxoa);
+        btnlammoi = findViewById(R.id.btnlammoi);
         btnquaylai = findViewById(R.id.btnquaylai);
         lvdanhsach = findViewById(R.id.lvdanhsach);
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
 
-        // Khởi tạo Spinner danh mục
+        // Khởi tạo Spinner danh mục (có mục Tất cả danh mục)
         listDanhMuc = new ArrayList<>();
         adapterDanhMuc = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listDanhMuc);
         adapterDanhMuc.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -116,25 +130,46 @@ public class QuanLyMonActivity extends AppCompatActivity {
         adapterMon = new MonAdapter(this, listMon);
         lvdanhsach.setAdapter(adapterMon);
 
+        // Nạp danh mục trước, sau đó nạp tất cả món
         loadDanhMuc();
-        loadMon();
+        loadMon(0);
 
+        // Lọc danh sách món khi chọn danh mục trên Spinner
+        spdanhmuc.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isUpdatingFromList) {
+                    isUpdatingFromList = false;
+                    return;
+                }
+                DanhMuc dm = listDanhMuc.get(position);
+                loadMon(dm.id);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        // Xử lý nút Thêm món
         btnthem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String ten = edittenmon.getText().toString().trim();
                 String mota = editmota.getText().toString().trim();
                 String giastr = editgia.getText().toString().trim();
-                
+
                 if (ten.isEmpty() || giastr.isEmpty()) {
                     Toast.makeText(QuanLyMonActivity.this, "Vui lòng nhập đủ tên và giá món", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (spdanhmuc.getSelectedItem() == null) {
-                    Toast.makeText(QuanLyMonActivity.this, "Vui lòng tạo danh mục trước khi thêm món", Toast.LENGTH_SHORT).show();
+
+                DanhMuc dmChon = (DanhMuc) spdanhmuc.getSelectedItem();
+                if (dmChon == null || dmChon.id == 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn một danh mục cụ thể (khác 'Tất cả') để thêm món", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                
+
                 int gia;
                 try {
                     gia = Integer.parseInt(giastr);
@@ -147,37 +182,42 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     return;
                 }
 
-                int madm = ((DanhMuc) spdanhmuc.getSelectedItem()).id;
-                
                 ContentValues cv = new ContentValues();
                 cv.put("tenmon", ten);
                 cv.put("mota", mota);
                 cv.put("gia", gia);
-                cv.put("madm", madm);
+                cv.put("madm", dmChon.id);
                 mydatabase.insert("tblmon", null, cv);
 
                 Toast.makeText(QuanLyMonActivity.this, "Thêm món thành công", Toast.LENGTH_SHORT).show();
                 resetForm();
-                loadMon();
+                loadMon(dmChon.id);
             }
         });
 
+        // Xử lý nút Sửa món
         btnsua.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (selectedId == -1) {
-                    Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn món để sửa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn món trong danh sách để sửa", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String ten = edittenmon.getText().toString().trim();
                 String mota = editmota.getText().toString().trim();
                 String giastr = editgia.getText().toString().trim();
-                
+
                 if (ten.isEmpty() || giastr.isEmpty()) {
                     Toast.makeText(QuanLyMonActivity.this, "Vui lòng nhập đủ tên và giá", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                
+
+                DanhMuc dmChon = (DanhMuc) spdanhmuc.getSelectedItem();
+                if (dmChon == null || dmChon.id == 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn một danh mục cụ thể cho món", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 int gia;
                 try {
                     gia = Integer.parseInt(giastr);
@@ -190,35 +230,49 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     return;
                 }
 
-                int madm = ((DanhMuc) spdanhmuc.getSelectedItem()).id;
-                
                 ContentValues cv = new ContentValues();
                 cv.put("tenmon", ten);
                 cv.put("mota", mota);
                 cv.put("gia", gia);
-                cv.put("madm", madm);
+                cv.put("madm", dmChon.id);
                 mydatabase.update("tblmon", cv, "id = ?", new String[]{String.valueOf(selectedId)});
 
                 Toast.makeText(QuanLyMonActivity.this, "Cập nhật món thành công", Toast.LENGTH_SHORT).show();
                 resetForm();
-                loadMon();
+                loadMon(dmChon.id);
             }
         });
 
+        // Xử lý nút Xóa món
         btnxoa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (selectedId == -1) {
-                    Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn món để xóa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn món trong danh sách để xóa", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                DanhMuc dmChon = (DanhMuc) spdanhmuc.getSelectedItem();
+                int madmHienTai = (dmChon != null) ? dmChon.id : 0;
+
                 mydatabase.delete("tblmon", "id = ?", new String[]{String.valueOf(selectedId)});
                 Toast.makeText(QuanLyMonActivity.this, "Xóa món thành công", Toast.LENGTH_SHORT).show();
                 resetForm();
-                loadMon();
+                loadMon(madmHienTai);
             }
         });
 
+        // Xử lý nút Làm mới form và hiển thị lại toàn bộ danh sách
+        btnlammoi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetForm();
+                spdanhmuc.setSelection(0);
+                loadMon(0);
+                Toast.makeText(QuanLyMonActivity.this, "Đã làm mới form", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Chọn món từ danh sách để sửa hoặc xóa
         lvdanhsach.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -227,8 +281,9 @@ public class QuanLyMonActivity extends AppCompatActivity {
                 edittenmon.setText(m.tenmon);
                 editmota.setText(m.mota);
                 editgia.setText(String.valueOf(m.gia));
-                
-                // Chọn lại giá trị cho spinner
+
+                // Bật cờ để tránh việc setSelection tự kích hoạt lọc lại danh sách
+                isUpdatingFromList = true;
                 for (int i = 0; i < listDanhMuc.size(); i++) {
                     if (listDanhMuc.get(i).id == m.madm) {
                         spdanhmuc.setSelection(i);
@@ -238,6 +293,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
             }
         });
 
+        // Nút quay lại màn hình trước
         btnquaylai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,10 +301,14 @@ public class QuanLyMonActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        // Xử lý padding Edge-to-Edge bằng anonymous class (không dùng lambda)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            }
         });
     }
 
@@ -261,7 +321,9 @@ public class QuanLyMonActivity extends AppCompatActivity {
 
     private void loadDanhMuc() {
         listDanhMuc.clear();
-        Cursor c = mydatabase.rawQuery("SELECT * FROM tbldanhmuc", null);
+        // Mục đầu tiên là Tất cả để xem toàn bộ thực đơn
+        listDanhMuc.add(new DanhMuc(0, "Tất cả danh mục"));
+        Cursor c = mydatabase.rawQuery("SELECT id, tendm FROM tbldanhmuc", null);
         while (c.moveToNext()) {
             listDanhMuc.add(new DanhMuc(c.getInt(0), c.getString(1)));
         }
@@ -269,10 +331,16 @@ public class QuanLyMonActivity extends AppCompatActivity {
         adapterDanhMuc.notifyDataSetChanged();
     }
 
-    private void loadMon() {
+    private void loadMon(int madm) {
         listMon.clear();
-        // Lấy thông tin món kèm theo tên danh mục thông qua LEFT JOIN
-        Cursor c = mydatabase.rawQuery("SELECT tblmon.*, tbldanhmuc.tendm FROM tblmon LEFT JOIN tbldanhmuc ON tblmon.madm = tbldanhmuc.id", null);
+        Cursor c;
+        if (madm == 0) {
+            // Lấy tất cả món kèm tên danh mục thông qua LEFT JOIN
+            c = mydatabase.rawQuery("SELECT tblmon.*, tbldanhmuc.tendm FROM tblmon LEFT JOIN tbldanhmuc ON tblmon.madm = tbldanhmuc.id", null);
+        } else {
+            // Lọc theo danh mục cụ thể
+            c = mydatabase.rawQuery("SELECT tblmon.*, tbldanhmuc.tendm FROM tblmon LEFT JOIN tbldanhmuc ON tblmon.madm = tbldanhmuc.id WHERE tblmon.madm = ?", new String[]{String.valueOf(madm)});
+        }
         while (c.moveToNext()) {
             listMon.add(new Mon(c.getInt(0), c.getString(1), c.getString(2), c.getInt(3), c.getInt(4), c.getString(5)));
         }
