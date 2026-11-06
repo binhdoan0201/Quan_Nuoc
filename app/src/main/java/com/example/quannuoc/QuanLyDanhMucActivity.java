@@ -1,5 +1,6 @@
 package com.example.quannuoc;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -75,7 +76,9 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyDanhMucActivity.this, "Vui lòng nhập tên danh mục", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mydatabase.execSQL("INSERT INTO tbldanhmuc (tendm) VALUES ('" + ten + "')");
+                ContentValues cv = new ContentValues();
+                cv.put("tendm", ten);
+                mydatabase.insert("tbldanhmuc", null, cv);
                 Toast.makeText(QuanLyDanhMucActivity.this, "Thêm danh mục thành công", Toast.LENGTH_SHORT).show();
                 edittendm.setText("");
                 loadData();
@@ -94,7 +97,9 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyDanhMucActivity.this, "Vui lòng nhập tên danh mục", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mydatabase.execSQL("UPDATE tbldanhmuc SET tendm = '" + ten + "' WHERE id = " + selectedId);
+                ContentValues cv = new ContentValues();
+                cv.put("tendm", ten);
+                mydatabase.update("tbldanhmuc", cv, "id = ?", new String[]{String.valueOf(selectedId)});
                 Toast.makeText(QuanLyDanhMucActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
                 edittendm.setText("");
                 selectedId = -1;
@@ -109,7 +114,7 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyDanhMucActivity.this, "Vui lòng chọn danh mục để xóa", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mydatabase.execSQL("DELETE FROM tbldanhmuc WHERE id = " + selectedId);
+                mydatabase.delete("tbldanhmuc", "id = ?", new String[]{String.valueOf(selectedId)});
                 Toast.makeText(QuanLyDanhMucActivity.this, "Xóa danh mục thành công", Toast.LENGTH_SHORT).show();
                 edittendm.setText("");
                 selectedId = -1;

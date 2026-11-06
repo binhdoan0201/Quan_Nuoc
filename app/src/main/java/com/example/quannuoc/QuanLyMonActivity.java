@@ -1,5 +1,6 @@
 package com.example.quannuoc;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,7 +22,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,8 +75,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
             TextView text2 = view.findViewById(android.R.id.text2);
             Mon m = getItem(position);
             text1.setText(m.tenmon);
-            DecimalFormat df = new DecimalFormat("#,###");
-            text2.setText("Giá: " + df.format(m.gia) + "đ - Danh mục: " + m.tendm);
+            text2.setText("Giá: " + dinhDangTien(m.gia) + " - Danh mục: " + m.tendm);
             return view;
         }
     }
@@ -131,10 +130,27 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     return;
                 }
                 
-                int gia = Integer.parseInt(giastr);
+                int gia;
+                try {
+                    gia = Integer.parseInt(giastr);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá món phải là số hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (gia < 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá món không được âm", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 int madm = ((DanhMuc) spdanhmuc.getSelectedItem()).id;
                 
-                mydatabase.execSQL("INSERT INTO tblmon (tenmon, mota, gia, madm) VALUES ('" + ten + "', '" + mota + "', " + gia + ", " + madm + ")");
+                ContentValues cv = new ContentValues();
+                cv.put("tenmon", ten);
+                cv.put("mota", mota);
+                cv.put("gia", gia);
+                cv.put("madm", madm);
+                mydatabase.insert("tblmon", null, cv);
+
                 Toast.makeText(QuanLyMonActivity.this, "Thêm món thành công", Toast.LENGTH_SHORT).show();
                 resetForm();
                 loadMon();
@@ -157,10 +173,27 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     return;
                 }
                 
-                int gia = Integer.parseInt(giastr);
+                int gia;
+                try {
+                    gia = Integer.parseInt(giastr);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá món phải là số hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (gia < 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá món không được âm", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 int madm = ((DanhMuc) spdanhmuc.getSelectedItem()).id;
                 
-                mydatabase.execSQL("UPDATE tblmon SET tenmon = '" + ten + "', mota = '" + mota + "', gia = " + gia + ", madm = " + madm + " WHERE id = " + selectedId);
+                ContentValues cv = new ContentValues();
+                cv.put("tenmon", ten);
+                cv.put("mota", mota);
+                cv.put("gia", gia);
+                cv.put("madm", madm);
+                mydatabase.update("tblmon", cv, "id = ?", new String[]{String.valueOf(selectedId)});
+
                 Toast.makeText(QuanLyMonActivity.this, "Cập nhật món thành công", Toast.LENGTH_SHORT).show();
                 resetForm();
                 loadMon();
@@ -174,7 +207,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn món để xóa", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mydatabase.execSQL("DELETE FROM tblmon WHERE id = " + selectedId);
+                mydatabase.delete("tblmon", "id = ?", new String[]{String.valueOf(selectedId)});
                 Toast.makeText(QuanLyMonActivity.this, "Xóa món thành công", Toast.LENGTH_SHORT).show();
                 resetForm();
                 loadMon();
@@ -240,5 +273,9 @@ public class QuanLyMonActivity extends AppCompatActivity {
         }
         c.close();
         adapterMon.notifyDataSetChanged();
+    }
+
+    private String dinhDangTien(int sotien) {
+        return String.format("%,d", sotien).replace(",", ".") + " đ";
     }
 }

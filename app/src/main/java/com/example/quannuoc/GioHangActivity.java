@@ -22,14 +22,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class GioHangActivity extends AppCompatActivity {
-
     //Bước 1: Khai báo biến giao diện
     TextView txttongtien;
     ListView lvgiohang;
@@ -43,7 +41,6 @@ public class GioHangActivity extends AppCompatActivity {
 
     int userid;
     int tongTienTatCa = 0;
-    DecimalFormat df = new DecimalFormat("#,###");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +136,7 @@ public class GioHangActivity extends AppCompatActivity {
                 int thanhTien = soluong * gia;
                 tongTienTatCa += thanhTien;
 
-                String data = tenmon + " | SL: " + soluong + " | Đơn giá: " + df.format(gia) + " đ | Thành tiền: " + df.format(thanhTien) + " đ";
+                String data = tenmon + " | SL: " + soluong + " | Đơn giá: " + dinhDangTien(gia) + " | Thành tiền: " + dinhDangTien(thanhTien);
                 mylist.add(data);
                 listGioHangId.add(idGioHang);
                 listSoLuong.add(soluong);
@@ -148,7 +145,7 @@ public class GioHangActivity extends AppCompatActivity {
         }
 
         myadapter.notifyDataSetChanged();
-        txttongtien.setText("Tổng tiền: " + df.format(tongTienTatCa) + " đ");
+        txttongtien.setText("Tổng tiền: " + dinhDangTien(tongTienTatCa));
     }
 
     private void hienThiDialogSuaSoLuong(int giohangId, int soluongHienTai) {
@@ -265,5 +262,9 @@ public class GioHangActivity extends AppCompatActivity {
         } else {
             Toast.makeText(GioHangActivity.this, "Đặt hàng thất bại, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String dinhDangTien(int sotien) {
+        return String.format("%,d", sotien).replace(",", ".") + " đ";
     }
 }

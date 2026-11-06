@@ -19,11 +19,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class LichSuActivity extends AppCompatActivity {
-
     //Bước 1: Khai báo biến giao diện
     ListView lvlichsu;
     Button btnquaylai;
@@ -35,7 +33,6 @@ public class LichSuActivity extends AppCompatActivity {
     ArrayList<Integer> listTrangThai;
 
     int userid;
-    DecimalFormat df = new DecimalFormat("#,###");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +102,7 @@ public class LichSuActivity extends AppCompatActivity {
                 int trangthai = c.getInt(4);
 
                 String strTrangThai = getTenTrangThai(trangthai);
-                String data = "Mã đơn: #" + madon + "\nNgày: " + ngaydat + "\nTổng tiền: " + df.format(tongtien) + " đ\nTrạng thái: " + strTrangThai;
+                String data = "Mã đơn: #" + madon + "\nNgày: " + ngaydat + "\nTổng tiền: " + dinhDangTien(tongtien) + "\nTrạng thái: " + strTrangThai;
 
                 mylist.add(data);
                 listDonHangId.add(madon);
@@ -153,8 +150,8 @@ public class LichSuActivity extends AppCompatActivity {
 
                 details.append(stt).append(". ").append(tenmon)
                         .append(" x").append(soluong)
-                        .append(" (").append(df.format(gia)).append(" đ)")
-                        .append(" = ").append(df.format(thanhTien)).append(" đ\n");
+                        .append(" (").append(dinhDangTien(gia)).append(")")
+                        .append(" = ").append(dinhDangTien(thanhTien)).append("\n");
                 stt++;
             } while (c.moveToNext());
             c.close();
@@ -196,5 +193,9 @@ public class LichSuActivity extends AppCompatActivity {
         } else {
             Toast.makeText(LichSuActivity.this, "Không thể hủy đơn hàng!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String dinhDangTien(int sotien) {
+        return String.format("%,d", sotien).replace(",", ".") + " đ";
     }
 }

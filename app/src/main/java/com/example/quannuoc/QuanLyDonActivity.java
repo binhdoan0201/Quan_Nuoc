@@ -1,6 +1,7 @@
 package com.example.quannuoc;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -21,7 +22,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +64,7 @@ public class QuanLyDonActivity extends AppCompatActivity {
             else if (d.trangthai == 2) strTrangThai = "Hoàn thành";
             else if (d.trangthai == 3) strTrangThai = "Đã hủy";
             
-            // Định dạng tiền tệ
-            DecimalFormat df = new DecimalFormat("#,###");
-            text2.setText("Tổng tiền: " + df.format(d.tongtien) + "đ - " + strTrangThai);
+            text2.setText("Tổng tiền: " + dinhDangTien(d.tongtien) + " - " + strTrangThai);
             return view;
         }
     }
@@ -103,7 +101,9 @@ public class QuanLyDonActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // which tương ứng với chỉ mục 0,1,2,3 - đúng bằng trạng thái trong CSDL
-                        mydatabase.execSQL("UPDATE tbldonhang SET trangthai = " + which + " WHERE id = " + don.id);
+                        ContentValues cv = new ContentValues();
+                        cv.put("trangthai", which);
+                        mydatabase.update("tbldonhang", cv, "id = ?", new String[]{String.valueOf(don.id)});
                         dialog.dismiss();
                         Toast.makeText(QuanLyDonActivity.this, "Đã cập nhật trạng thái đơn hàng", Toast.LENGTH_SHORT).show();
                         loadDon();
@@ -136,5 +136,9 @@ public class QuanLyDonActivity extends AppCompatActivity {
         }
         c.close();
         adapterDon.notifyDataSetChanged();
+    }
+
+    private String dinhDangTien(int sotien) {
+        return String.format("%,d", sotien).replace(",", ".") + " đ";
     }
 }
