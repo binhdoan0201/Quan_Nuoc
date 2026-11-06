@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -54,10 +55,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            }
         });
     }
 
@@ -123,7 +127,21 @@ public class MainActivity extends AppCompatActivity {
                 "tenmon TEXT NOT NULL, " +
                 "mota TEXT, " +
                 "gia INTEGER NOT NULL, " +
-                "madm INTEGER)");
+                "madm INTEGER, " +
+                "hinhanh TEXT)");
+
+        // Tự động bổ sung cột hinhanh nếu database đã tạo từ trước
+        try {
+            mydatabase.execSQL("ALTER TABLE tblmon ADD COLUMN hinhanh TEXT");
+        } catch (Exception e) {
+            // Cột hinhanh đã tồn tại
+        }
+
+        // Tự động cập nhật tên ảnh cho dữ liệu cũ nếu đang để rỗng
+        try {
+            mydatabase.execSQL("UPDATE tblmon SET hinhanh = 'mon' || id WHERE hinhanh IS NULL OR hinhanh = ''");
+        } catch (Exception e) {
+        }
 
         mydatabase.execSQL("CREATE TABLE IF NOT EXISTS tblgiohang (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -174,26 +192,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void themMonMau() {
-        themMon("Cà phê đen đá", "Cà phê Robusta Đắk Lắk nguyên chất, đậm vị đắng thanh", 20000, 1);
-        themMon("Cà phê sữa đá", "Cà phê phin đậm đà hòa cùng sữa đặc ngọt béo", 25000, 1);
-        themMon("Bạc xỉu đá", "Nhiều sữa tươi, phảng phất vị cà phê thơm dịu", 28000, 1);
-        themMon("Cà phê muối", "Lớp kem muối béo mặn hòa cùng cà phê phin", 32000, 1);
-        themMon("Cappuccino", "Espresso hòa cùng lớp bọt sữa nóng dày mịn", 40000, 1);
-        themMon("Trà sữa trân châu đường đen", "Trà sữa béo ngậy cùng trân châu đường đen dẻo dai", 35000, 2);
-        themMon("Trà sữa Oolong nướng", "Hương trà ô long rang nướng thơm lừng", 38000, 2);
-        themMon("Trà sữa Thái xanh", "Trà xanh Thái Lan thanh mát, thơm mùi thảo mộc", 32000, 2);
-        themMon("Trà sữa khoai môn", "Vị bùi béo tự nhiên từ khoai môn tươi xay mịn", 36000, 2);
-        themMon("Trà đào cam sả", "Sả thơm, cam tươi chua dịu và miếng đào giòn ngọt", 35000, 3);
-        themMon("Trà vải hoa hồng", "Hương hoa hồng kết hợp trái vải ngâm mọng nước", 38000, 3);
-        themMon("Trà ổi hồng", "Vị chua ngọt giải nhiệt trong ngày hè", 38000, 3);
-        themMon("Matcha đá xay", "Matcha Nhật Bản xay mịn cùng sữa, phủ kem phô mai", 45000, 4);
-        themMon("Socola đá xay", "Socola đen xay nhuyễn, rắc hạnh nhân nướng", 45000, 4);
-        themMon("Cookie đá xay", "Bánh Oreo xay cùng sữa tươi và kem tươi", 42000, 4);
-        themMon("Nước cam vắt", "100% cam sành tươi, giàu vitamin C", 30000, 5);
-        themMon("Nước ép dưa hấu", "Dưa hấu đỏ tươi ngọt thanh tự nhiên", 28000, 5);
-        themMon("Sinh tố bơ", "Bơ sáp Đắk Lắk dẻo đặc hòa cùng sữa đặc", 42000, 5);
-        themMon("Bánh Tiramisu", "Phô mai Mascarpone mềm tan thơm hương cà phê", 35000, 6);
-        themMon("Bánh Croissant", "Bánh sừng bò nướng ngàn lớp thơm bơ", 25000, 6);
+        themMon("Cà phê đen đá", "Cà phê Robusta Đắk Lắk nguyên chất, đậm vị đắng thanh", 20000, 1, "mon1");
+        themMon("Cà phê sữa đá", "Cà phê phin đậm đà hòa cùng sữa đặc ngọt béo", 25000, 1, "mon2");
+        themMon("Bạc xỉu đá", "Nhiều sữa tươi, phảng phất vị cà phê thơm dịu", 28000, 1, "mon3");
+        themMon("Cà phê muối", "Lớp kem muối béo mặn hòa cùng cà phê phin", 32000, 1, "mon4");
+        themMon("Cappuccino", "Espresso hòa cùng lớp bọt sữa nóng dày mịn", 40000, 1, "mon5");
+        themMon("Trà sữa trân châu đường đen", "Trà sữa béo ngậy cùng trân châu đường đen dẻo dai", 35000, 2, "mon6");
+        themMon("Trà sữa Oolong nướng", "Hương trà ô long rang nướng thơm lừng", 38000, 2, "mon7");
+        themMon("Trà sữa Thái xanh", "Trà xanh Thái Lan thanh mát, thơm mùi thảo mộc", 32000, 2, "mon8");
+        themMon("Trà sữa khoai môn", "Vị bùi béo tự nhiên từ khoai môn tươi xay mịn", 36000, 2, "mon9");
+        themMon("Trà đào cam sả", "Sả thơm, cam tươi chua dịu và miếng đào giòn ngọt", 35000, 3, "mon10");
+        themMon("Trà vải hoa hồng", "Hương hoa hồng kết hợp trái vải ngâm mọng nước", 38000, 3, "mon11");
+        themMon("Trà ổi hồng", "Vị chua ngọt giải nhiệt trong ngày hè", 38000, 3, "mon12");
+        themMon("Matcha đá xay", "Matcha Nhật Bản xay mịn cùng sữa, phủ kem phô mai", 45000, 4, "mon13");
+        themMon("Socola đá xay", "Socola đen xay nhuyễn, rắc hạnh nhân nướng", 45000, 4, "mon14");
+        themMon("Cookie đá xay", "Bánh Oreo xay cùng sữa tươi và kem tươi", 42000, 4, "mon15");
+        themMon("Nước cam vắt", "100% cam sành tươi, giàu vitamin C", 30000, 5, "mon16");
+        themMon("Nước ép dưa hấu", "Dưa hấu đỏ tươi ngọt thanh tự nhiên", 28000, 5, "mon17");
+        themMon("Sinh tố bơ", "Bơ sáp Đắk Lắk dẻo đặc hòa cùng sữa đặc", 42000, 5, "mon18");
+        themMon("Bánh Tiramisu", "Phô mai Mascarpone mềm tan thơm hương cà phê", 35000, 6, "mon19");
+        themMon("Bánh Croissant", "Bánh sừng bò nướng ngàn lớp thơm bơ", 25000, 6, "mon20");
     }
 
     private void themDonHangMau() {
@@ -222,12 +240,13 @@ public class MainActivity extends AppCompatActivity {
         mydatabase.insert("tbldanhmuc", null, myvalue);
     }
 
-    private void themMon(String tenmon, String mota, int gia, int madm) {
+    private void themMon(String tenmon, String mota, int gia, int madm, String hinhanh) {
         ContentValues myvalue = new ContentValues();
         myvalue.put("tenmon", tenmon);
         myvalue.put("mota", mota);
         myvalue.put("gia", gia);
         myvalue.put("madm", madm);
+        myvalue.put("hinhanh", hinhanh);
         mydatabase.insert("tblmon", null, myvalue);
     }
 

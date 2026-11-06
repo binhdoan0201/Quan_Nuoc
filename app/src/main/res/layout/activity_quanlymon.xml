@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginBottom="6dp">
+        android:layout_marginBottom="4dp">
 
         <TextView
             android:id="@+id/txtdanhmuc"
@@ -84,7 +84,40 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <!-- Hàng 4: 4 Nút chức năng Thêm - Sửa - Xóa - Làm mới -->
+    <!-- Hàng 4: Chọn ảnh đại diện và xem trước -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="6dp">
+
+        <TextView
+            android:id="@+id/txtanh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ảnh món:"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:layout_marginEnd="8dp" />
+
+        <Spinner
+            android:id="@+id/spanh"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp" />
+
+        <ImageView
+            android:id="@+id/imgxemtruoc"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/mon1" />
+    </LinearLayout>
+
+    <!-- Hàng 5: 4 Nút chức năng Thêm - Sửa - Xóa - Làm mới -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
