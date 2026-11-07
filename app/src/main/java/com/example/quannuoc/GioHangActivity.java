@@ -19,6 +19,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -108,10 +109,13 @@ public class GioHangActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            }
         });
     }
 
@@ -127,20 +131,22 @@ public class GioHangActivity extends AppCompatActivity {
                 "WHERE tblgiohang.userid = ?";
         Cursor c = mydatabase.rawQuery(sql, new String[]{String.valueOf(userid)});
 
-        if (c != null && c.moveToFirst()) {
-            do {
-                int idGioHang = c.getInt(0);
-                String tenmon = c.getString(1);
-                int soluong = c.getInt(2);
-                int gia = c.getInt(3);
-                int thanhTien = soluong * gia;
-                tongTienTatCa += thanhTien;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+                    int idGioHang = c.getInt(0);
+                    String tenmon = c.getString(1);
+                    int soluong = c.getInt(2);
+                    int gia = c.getInt(3);
+                    int thanhTien = soluong * gia;
+                    tongTienTatCa += thanhTien;
 
-                String data = tenmon + " | SL: " + soluong + " | Đơn giá: " + dinhDangTien(gia) + " | Thành tiền: " + dinhDangTien(thanhTien);
-                mylist.add(data);
-                listGioHangId.add(idGioHang);
-                listSoLuong.add(soluong);
-            } while (c.moveToNext());
+                    String data = tenmon + " | SL: " + soluong + " | Đơn giá: " + dinhDangTien(gia) + " | Thành tiền: " + dinhDangTien(thanhTien);
+                    mylist.add(data);
+                    listGioHangId.add(idGioHang);
+                    listSoLuong.add(soluong);
+                } while (c.moveToNext());
+            }
             c.close();
         }
 
@@ -165,9 +171,17 @@ public class GioHangActivity extends AppCompatActivity {
                     Toast.makeText(GioHangActivity.this, "Số lượng không được để trống", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                int soluongMoi = Integer.parseInt(strSoLuong);
-                if (soluongMoi <= 0) {
-                    Toast.makeText(GioHangActivity.this, "Số lượng phải lớn hơn 0", Toast.LENGTH_SHORT).show();
+
+                int soluongMoi;
+                try {
+                    soluongMoi = Integer.parseInt(strSoLuong);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(GioHangActivity.this, "Số lượng không hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (soluongMoi <= 0 || soluongMoi > 999) {
+                    Toast.makeText(GioHangActivity.this, "Số lượng phải từ 1 đến 999", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -237,20 +251,22 @@ public class GioHangActivity extends AppCompatActivity {
                     "WHERE tblgiohang.userid = ?";
             Cursor c = mydatabase.rawQuery(sql, new String[]{String.valueOf(userid)});
 
-            if (c != null && c.moveToFirst()) {
-                do {
-                    int mamon = c.getInt(0);
-                    int soluong = c.getInt(1);
-                    int gia = c.getInt(2);
+            if (c != null) {
+                if (c.moveToFirst()) {
+                    do {
+                        int mamon = c.getInt(0);
+                        int soluong = c.getInt(1);
+                        int gia = c.getInt(2);
 
-                    ContentValues valChiTiet = new ContentValues();
-                    valChiTiet.put("madon", madon);
-                    valChiTiet.put("mamon", mamon);
-                    valChiTiet.put("soluong", soluong);
-                    valChiTiet.put("gia", gia);
+                        ContentValues valChiTiet = new ContentValues();
+                        valChiTiet.put("madon", madon);
+                        valChiTiet.put("mamon", mamon);
+                        valChiTiet.put("soluong", soluong);
+                        valChiTiet.put("gia", gia);
 
-                    mydatabase.insert("tblchitiet", null, valChiTiet);
-                } while (c.moveToNext());
+                        mydatabase.insert("tblchitiet", null, valChiTiet);
+                    } while (c.moveToNext());
+                }
                 c.close();
             }
 

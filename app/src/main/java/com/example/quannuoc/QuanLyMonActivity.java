@@ -222,8 +222,8 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyMonActivity.this, "Giá món phải là số hợp lệ", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (gia < 0) {
-                    Toast.makeText(QuanLyMonActivity.this, "Giá món không được âm", Toast.LENGTH_SHORT).show();
+                if (gia <= 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá món phải lớn hơn 0", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -274,8 +274,8 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyMonActivity.this, "Giá món phải là số hợp lệ", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (gia < 0) {
-                    Toast.makeText(QuanLyMonActivity.this, "Giá món không được âm", Toast.LENGTH_SHORT).show();
+                if (gia <= 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá món phải lớn hơn 0", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -304,6 +304,35 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyMonActivity.this, "Vui lòng chọn món trong danh sách để xóa", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                // Kiểm tra xem món đã từng được đặt trong đơn hàng chưa (để tránh làm rách dữ liệu chi tiết đơn)
+                Cursor cChiTiet = mydatabase.rawQuery("SELECT COUNT(*) FROM tblchitiet WHERE mamon = ?", new String[]{String.valueOf(selectedId)});
+                int countChiTiet = 0;
+                if (cChiTiet != null) {
+                    if (cChiTiet.moveToFirst()) {
+                        countChiTiet = cChiTiet.getInt(0);
+                    }
+                    cChiTiet.close();
+                }
+                if (countChiTiet > 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Món đã có trong lịch sử đơn hàng, không thể xóa", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Kiểm tra xem món có đang nằm trong giỏ hàng của khách nào không
+                Cursor cGio = mydatabase.rawQuery("SELECT COUNT(*) FROM tblgiohang WHERE mamon = ?", new String[]{String.valueOf(selectedId)});
+                int countGio = 0;
+                if (cGio != null) {
+                    if (cGio.moveToFirst()) {
+                        countGio = cGio.getInt(0);
+                    }
+                    cGio.close();
+                }
+                if (countGio > 0) {
+                    Toast.makeText(QuanLyMonActivity.this, "Món đang có trong giỏ hàng của khách, không thể xóa", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 DanhMuc dmChon = (DanhMuc) spdanhmuc.getSelectedItem();
                 int madmHienTai = (dmChon != null) ? dmChon.id : 0;
 

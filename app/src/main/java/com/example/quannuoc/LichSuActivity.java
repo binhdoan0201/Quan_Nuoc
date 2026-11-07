@@ -16,6 +16,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -80,10 +81,13 @@ public class LichSuActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            }
         });
     }
 
@@ -94,20 +98,22 @@ public class LichSuActivity extends AppCompatActivity {
 
         Cursor c = mydatabase.query("tbldonhang", null, "userid = ?", new String[]{String.valueOf(userid)}, null, null, "id DESC");
 
-        if (c != null && c.moveToFirst()) {
-            do {
-                int madon = c.getInt(0);
-                String ngaydat = c.getString(2);
-                int tongtien = c.getInt(3);
-                int trangthai = c.getInt(4);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+                    int madon = c.getInt(0);
+                    String ngaydat = c.getString(2);
+                    int tongtien = c.getInt(3);
+                    int trangthai = c.getInt(4);
 
-                String strTrangThai = getTenTrangThai(trangthai);
-                String data = "Mã đơn: #" + madon + "\nNgày: " + ngaydat + "\nTổng tiền: " + dinhDangTien(tongtien) + "\nTrạng thái: " + strTrangThai;
+                    String strTrangThai = getTenTrangThai(trangthai);
+                    String data = "Mã đơn: #" + madon + "\nNgày: " + ngaydat + "\nTổng tiền: " + dinhDangTien(tongtien) + "\nTrạng thái: " + strTrangThai;
 
-                mylist.add(data);
-                listDonHangId.add(madon);
-                listTrangThai.add(trangthai);
-            } while (c.moveToNext());
+                    mylist.add(data);
+                    listDonHangId.add(madon);
+                    listTrangThai.add(trangthai);
+                } while (c.moveToNext());
+            }
             c.close();
         }
 
@@ -140,23 +146,25 @@ public class LichSuActivity extends AppCompatActivity {
                 "WHERE tblchitiet.madon = ?";
         Cursor c = mydatabase.rawQuery(sql, new String[]{String.valueOf(madon)});
 
-        if (c != null && c.moveToFirst()) {
-            int stt = 1;
-            do {
-                String tenmon = c.getString(0);
-                int soluong = c.getInt(1);
-                int gia = c.getInt(2);
-                int thanhTien = soluong * gia;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                int stt = 1;
+                do {
+                    String tenmon = c.getString(0);
+                    int soluong = c.getInt(1);
+                    int gia = c.getInt(2);
+                    int thanhTien = soluong * gia;
 
-                details.append(stt).append(". ").append(tenmon)
-                        .append(" x").append(soluong)
-                        .append(" (").append(dinhDangTien(gia)).append(")")
-                        .append(" = ").append(dinhDangTien(thanhTien)).append("\n");
-                stt++;
-            } while (c.moveToNext());
+                    details.append(stt).append(". ").append(tenmon)
+                            .append(" x").append(soluong)
+                            .append(" (").append(dinhDangTien(gia)).append(")")
+                            .append(" = ").append(dinhDangTien(thanhTien)).append("\n");
+                    stt++;
+                } while (c.moveToNext());
+            } else {
+                details.append("Không có chi tiết sản phẩm.\n");
+            }
             c.close();
-        } else {
-            details.append("Không có chi tiết sản phẩm.");
         }
 
         details.append("\nTrạng thái: ").append(getTenTrangThai(trangthai));
@@ -186,12 +194,14 @@ public class LichSuActivity extends AppCompatActivity {
         ContentValues myvalue = new ContentValues();
         myvalue.put("trangthai", 3); // 3 = Đã hủy
 
-        int rows = mydatabase.update("tbldonhang", myvalue, "id = ?", new String[]{String.valueOf(madon)});
+        // Chỉ cho phép hủy nếu đơn hàng vẫn đang ở trạng thái 0 (Chờ)
+        int rows = mydatabase.update("tbldonhang", myvalue, "id = ? AND trangthai = 0", new String[]{String.valueOf(madon)});
         if (rows > 0) {
             Toast.makeText(LichSuActivity.this, "Đã hủy đơn hàng #" + madon, Toast.LENGTH_SHORT).show();
             loadLichSuDonHang();
         } else {
-            Toast.makeText(LichSuActivity.this, "Không thể hủy đơn hàng!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LichSuActivity.this, "Không thể hủy vì đơn đã được tiếp nhận!", Toast.LENGTH_SHORT).show();
+            loadLichSuDonHang();
         }
     }
 

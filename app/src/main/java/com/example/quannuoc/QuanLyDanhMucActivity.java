@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -114,6 +115,22 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                     Toast.makeText(QuanLyDanhMucActivity.this, "Vui lòng chọn danh mục để xóa", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                // Kiểm tra xem danh mục có còn món hay không trước khi xóa
+                Cursor c = mydatabase.rawQuery("SELECT COUNT(*) FROM tblmon WHERE madm = ?", new String[]{String.valueOf(selectedId)});
+                int soMon = 0;
+                if (c != null) {
+                    if (c.moveToFirst()) {
+                        soMon = c.getInt(0);
+                    }
+                    c.close();
+                }
+
+                if (soMon > 0) {
+                    Toast.makeText(QuanLyDanhMucActivity.this, "Danh mục còn món, không thể xóa", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 mydatabase.delete("tbldanhmuc", "id = ?", new String[]{String.valueOf(selectedId)});
                 Toast.makeText(QuanLyDanhMucActivity.this, "Xóa danh mục thành công", Toast.LENGTH_SHORT).show();
                 edittendm.setText("");
@@ -138,10 +155,13 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            }
         });
     }
 

@@ -147,23 +147,25 @@ public class QuanLyDonActivity extends AppCompatActivity {
                 "WHERE tblchitiet.madon = ?";
         Cursor c = mydatabase.rawQuery(sql, new String[]{String.valueOf(don.id)});
 
-        if (c != null && c.moveToFirst()) {
-            int stt = 1;
-            do {
-                String tenmon = c.getString(0);
-                int soluong = c.getInt(1);
-                int gia = c.getInt(2);
-                int thanhTien = soluong * gia;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                int stt = 1;
+                do {
+                    String tenmon = c.getString(0);
+                    int soluong = c.getInt(1);
+                    int gia = c.getInt(2);
+                    int thanhTien = soluong * gia;
 
-                chiTietMon.append(stt).append(". ").append(tenmon)
-                        .append(" x").append(soluong)
-                        .append(" (").append(dinhDangTien(gia)).append(")")
-                        .append(" = ").append(dinhDangTien(thanhTien)).append("\n");
-                stt++;
-            } while (c.moveToNext());
+                    chiTietMon.append(stt).append(". ").append(tenmon)
+                            .append(" x").append(soluong)
+                            .append(" (").append(dinhDangTien(gia)).append(")")
+                            .append(" = ").append(dinhDangTien(thanhTien)).append("\n");
+                    stt++;
+                } while (c.moveToNext());
+            } else {
+                chiTietMon.append("(Không có dữ liệu chi tiết món)\n");
+            }
             c.close();
-        } else {
-            chiTietMon.append("(Không có dữ liệu chi tiết món)\n");
         }
 
         StringBuilder noiDung = new StringBuilder();
