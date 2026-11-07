@@ -93,3 +93,39 @@
 5. **Tiêu đề Commit**: Ngắn gọn, có tiền tố chỉ rõ màn hình, ví dụ: `GioHang: them xoa mon bang long click`.
 6. **Thay đổi CSDL / Bundle**: Bắt buộc phải thông báo cho cả nhóm trước khi đổi tên bảng, tên cột hoặc key Bundle và cập nhật vào `docs/csdl.md`.
 7. **Kiểm tra trước khi nộp PR**: Xóa import thừa, mã lệnh thử nghiệm không dùng, code chú thích dở dang và log debug.
+
+
+---
+
+## 9. Nhật ký nâng cấp & hoàn thiện (Changelog sau gộp nhánh)
+
+Sau khi tích hợp 4 nhánh chức năng, toàn bộ mã nguồn đã được rà soát, kiểm thử toàn diện và tiến hành các đợt nâng cấp kỹ thuật, cải thiện trải nghiệm người dùng, đảm bảo tính toàn vẹn dữ liệu:
+
+### 9.1. Sửa lỗi Crash hệ thống & Ổn định bộ nhớ
+- **Sửa lỗi crash `ArrayAdapter` tại `GioHangActivity`**: Chuyển đổi từ `android.R.layout.simple_list_item_2` sang `simple_list_item_1` phù hợp với `ArrayAdapter<String>`, khắc phục hoàn toàn lỗi ném ngoại lệ khi render danh sách giỏ hàng.
+- **Bọc `try-catch NumberFormatException` khi sửa số lượng trong giỏ hàng**: Thêm cơ chế bắt lỗi khi người dùng nhập số quá lớn hoặc ký tự bất thường, đồng thời giới hạn số lượng hợp lệ trong khoảng `1 – 999` món kèm thông báo Toast chi tiết.
+- **Xử lý triệt để rò rỉ con trỏ SQLite (`Cursor Leak`) tại 5 vị trí**: Đưa lệnh `c.close()` ra ngoài khối `if (c.moveToFirst())` và đảm bảo luôn đóng con trỏ trong mọi kịch bản dữ liệu (bao gồm `GioHangActivity` [2 chỗ], `LichSuActivity` [2 chỗ] và `QuanLyDonActivity` [1 chỗ]).
+- **Chuẩn hóa cú pháp thuần Java (Loại bỏ 100% Lambda)**: Toàn bộ listener và callback được chuyển đổi sang dạng lớp nặc danh (`new View.OnClickListener()`, `new DialogInterface.OnClickListener()`,...) tuân thủ chặt chẽ yêu cầu kỹ thuật của đề tài.
+
+### 9.2. Nâng cấp Giao diện & Trải nghiệm người dùng (UI/UX)
+- **Tối ưu hóa giao diện `QuanLyMonActivity`**: Thiết kế lại layout dạng biểu mẫu nhập liệu trực quan, phân vùng rõ ràng giữa ô nhập, bộ chọn ảnh và danh sách món ăn.
+- **Bổ sung nút "Làm mới" (Reset Form) tại `QuanLyMonActivity`**: Cho phép quản trị viên nhanh chóng xóa trắng form nhập liệu để thêm món mới mà không bị dính dữ liệu của món vừa chọn.
+- **Chuẩn hóa điều hướng & nút Đăng xuất**: Thay thế các nút "Đăng xuất" không phù hợp tại các màn hình con thành nút "Quay lại" trực quan; chỉ giữ chức năng Đăng xuất tại màn hình chính của khách hàng (`MenuActivity`) và quản trị viên (`AdminActivity`).
+- **Tự động điền tên đăng nhập sau đăng ký**: Sau khi đăng ký tài khoản thành công tại `DangKyActivity`, hệ thống tự động quay về `MainActivity` và điền sẵn username vào ô đăng nhập.
+- **Đồng bộ hóa hiển thị tiền tệ**: Chuẩn hóa toàn bộ định dạng hiển thị giá tiền sang dạng có dấu chấm phân cách hàng nghìn (ví dụ: `25.000 đ`) trên tất cả 10 màn hình của ứng dụng.
+
+### 9.3. Nâng cấp Nghiệp vụ & Bổ sung tính năng mới
+- **Bộ lọc danh mục thức uống trên form quản trị món**: Bổ sung Spinner lọc danh sách món theo từng danh mục tại `QuanLyMonActivity`, xử lý cờ `isUpdatingFromList` tránh xung đột dữ liệu khi chọn món từ danh sách.
+- **Tích hợp bộ chọn 20 ảnh mẫu đồ uống có xem trước (Preview)**: Bổ sung bộ tài nguyên hình ảnh phong phú, cho phép Admin chọn ảnh trực quan kèm ImageView xem trước tức thì; đồng bộ hiển thị ảnh đại diện tại `MenuActivity` và `ChiTietMonActivity`.
+- **Hiển thị thông tin khách hàng trên đơn đặt**: Bổ sung hiển thị Tên khách hàng và Số điện thoại liên hệ trực tiếp trên từng mục đơn hàng tại màn hình `QuanLyDonActivity`, giúp quán liên hệ giao nhận dễ dàng.
+- **Xem chi tiết danh sách món cần pha chế**: Hỗ trợ Admin nhấn vào từng đơn hàng để xem danh sách chi tiết các món, số lượng, đơn giá và tổng tiền cần xử lý.
+- **Áp dụng State Machine quản lý trạng thái đơn hàng**: Quản lý vòng đời đơn hàng theo luồng chuẩn 1 chiều (`Chờ xác nhận (0)` ➔ `Đang làm (1)` ➔ `Hoàn thành (2)` hoặc `Đã hủy (3)`), khóa cứng không cho phép chuyển ngược trạng thái đơn hàng đã hoàn tất hoặc đã hủy.
+
+### 9.4. Ràng buộc dữ liệu & Toàn vẹn cơ sở dữ liệu (Data Integrity)
+- **Chặn xóa danh mục khi còn món**: Kiểm tra `SELECT COUNT(*) FROM tblmon WHERE madm = ?` trước khi xóa danh mục trong `QuanLyDanhMucActivity`; nếu còn món sẽ cảnh báo Toast và từ chối xóa để tránh tạo ra dữ liệu mồ côi.
+- **Chặn xóa món đang nằm trong đơn hàng hoặc giỏ hàng**: Kiểm tra sự tồn tại của món trong `tblchitiet` và `tblgiohang` trước khi xóa tại `QuanLyMonActivity`, đảm bảo tính toàn vẹn dữ liệu lịch sử đơn hàng và tổng tiền.
+- **Ràng buộc đơn giá món bắt buộc `> 0`**: Chặn nhập giá `0` hoặc số âm ở cả hai chức năng Thêm mới và Sửa món, hiển thị thông báo yêu cầu nhập đơn giá hợp lệ.
+- **Ràng buộc trạng thái khi khách hủy đơn**: Tại `LichSuActivity`, câu lệnh hủy đơn được siết chặt với điều kiện `id = ? AND trangthai = 0`; ngăn chặn tình trạng khách hủy nhầm đơn hàng khi quán đã chuyển sang trạng thái "Đang làm".
+
+### 9.5. Cập nhật Cơ sở dữ liệu
+- **Mở rộng lược đồ bảng `tblmon`**: Bổ sung cột `hinhanh TEXT` để lưu trữ tên tài nguyên ảnh đồ uống, tích hợp cơ chế tự động nâng cấp CSDL (Auto-migration) kiểm tra và thêm cột an toàn qua `ALTER TABLE` khi khởi chạy ứng dụng.
