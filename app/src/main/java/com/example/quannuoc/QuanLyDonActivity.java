@@ -30,6 +30,7 @@ public class QuanLyDonActivity extends AppCompatActivity {
     ListView lvdonhang;
     Button btnquaylai;
     SQLiteDatabase mydatabase;
+    int userid = -1, role = -1;
 
     ArrayList<DonHang> listDon;
     DonHangAdapter adapterDon;
@@ -83,6 +84,14 @@ public class QuanLyDonActivity extends AppCompatActivity {
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
+
+        // Nhận Intent Bundle
+        android.content.Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("goi");
+        if (bundle != null) {
+            userid = bundle.getInt("userid", -1);
+            role = bundle.getInt("role", -1);
+        }
 
         listDon = new ArrayList<>();
         adapterDon = new DonHangAdapter(this, listDon);

@@ -32,6 +32,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
     Button btnthem, btnsua, btnxoa, btnquaylai;
     ListView lvdanhsach;
     SQLiteDatabase mydatabase;
+    int userid = -1, role = -1;
 
     ArrayList<DanhMuc> listDanhMuc;
     ArrayAdapter<DanhMuc> adapterDanhMuc;
@@ -101,6 +102,14 @@ public class QuanLyMonActivity extends AppCompatActivity {
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
 
+        // Nhận Intent Bundle
+        android.content.Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("goi");
+        if (bundle != null) {
+            userid = bundle.getInt("userid", -1);
+            role = bundle.getInt("role", -1);
+        }
+
         // Khởi tạo Spinner danh mục
         listDanhMuc = new ArrayList<>();
         adapterDanhMuc = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listDanhMuc);
@@ -131,7 +140,18 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     return;
                 }
                 
-                int gia = Integer.parseInt(giastr);
+                int gia = 0;
+                try {
+                    gia = Integer.parseInt(giastr);
+                    if (gia < 0) {
+                        Toast.makeText(QuanLyMonActivity.this, "Giá tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá tiền phải là số", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
                 int madm = ((DanhMuc) spdanhmuc.getSelectedItem()).id;
                 
                 mydatabase.execSQL("INSERT INTO tblmon (tenmon, mota, gia, madm) VALUES ('" + ten + "', '" + mota + "', " + gia + ", " + madm + ")");
@@ -157,7 +177,18 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     return;
                 }
                 
-                int gia = Integer.parseInt(giastr);
+                int gia = 0;
+                try {
+                    gia = Integer.parseInt(giastr);
+                    if (gia < 0) {
+                        Toast.makeText(QuanLyMonActivity.this, "Giá tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(QuanLyMonActivity.this, "Giá tiền phải là số", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
                 int madm = ((DanhMuc) spdanhmuc.getSelectedItem()).id;
                 
                 mydatabase.execSQL("UPDATE tblmon SET tenmon = '" + ten + "', mota = '" + mota + "', gia = " + gia + ", madm = " + madm + " WHERE id = " + selectedId);

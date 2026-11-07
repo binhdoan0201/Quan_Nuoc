@@ -25,6 +25,7 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
     Button btnthem, btnsua, btnxoa, btnquaylai;
     ListView lvdanhsach;
     SQLiteDatabase mydatabase;
+    int userid = -1, role = -1;
 
     ArrayList<DanhMuc> list;
     ArrayAdapter<DanhMuc> adapter;
@@ -60,6 +61,14 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
+
+        // Nhận Intent Bundle
+        android.content.Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("goi");
+        if (bundle != null) {
+            userid = bundle.getInt("userid", -1);
+            role = bundle.getInt("role", -1);
+        }
 
         list = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
