@@ -1,67 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFF8F3"
     android:orientation="vertical"
-    android:padding="16dp"
     tools:context=".QuanLyDanhMucActivity">
 
-    <TextView
-        android:id="@+id/txttieude"
+    <LinearLayout
+        android:id="@+id/llheader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quản lý danh mục"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-    <EditText
-        android:id="@+id/edittendm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Tên danh mục"
-        android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/txttieude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quản lý danh mục"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llform"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:padding="12dp">
 
-        <Button
-            android:id="@+id/btnthem"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Thêm" />
+        <EditText
+            android:id="@+id/edittendm"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Tên danh mục"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:singleLine="true" />
 
-        <Button
-            android:id="@+id/btnsua"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sửa" />
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnxoa"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Xóa" />
+            <Button
+                android:id="@+id/btnthem"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="#2EC4B6"
+                android:text="Thêm"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnsua"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="#FF9A44"
+                android:text="Sửa"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnxoa"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="#FC6076"
+                android:text="Xóa"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <ListView
         android:id="@+id/lvdanhsach"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
         android:layout_weight="1"
-        android:layout_marginBottom="16dp" />
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:scrollbars="none" />
 
     <Button
         android:id="@+id/btnquaylai"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="QUAY LẠI" />
+        android:layout_height="52dp"
+        android:layout_margin="16dp"
+        android:backgroundTint="#EFE6DC"
+        android:text="QUAY LẠI"
+        android:textColor="#6B5B50"
+        app:cornerRadius="14dp" />
 </LinearLayout>

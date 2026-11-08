@@ -3,13 +3,19 @@ package com.example.quannuoc;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -23,6 +29,7 @@ import java.util.ArrayList;
 
 public class QuanLyDanhMucActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
+    LinearLayout llheader, llform;
     EditText edittendm;
     Button btnthem, btnsua, btnxoa, btnquaylai;
     ListView lvdanhsach;
@@ -36,13 +43,13 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
     class DanhMuc {
         int id;
         String tendm;
-        public DanhMuc(int id, String tendm) { 
-            this.id = id; 
-            this.tendm = tendm; 
+        public DanhMuc(int id, String tendm) {
+            this.id = id;
+            this.tendm = tendm;
         }
-        @Override 
-        public String toString() { 
-            return tendm; 
+        @Override
+        public String toString() {
+            return tendm;
         }
     }
 
@@ -53,6 +60,8 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quanlydanhmuc);
 
         //Bước 2: Ánh xạ biến giao diện
+        llheader = findViewById(R.id.llheader);
+        llform = findViewById(R.id.llform);
         edittendm = findViewById(R.id.edittendm);
         btnthem = findViewById(R.id.btnthem);
         btnsua = findViewById(R.id.btnsua);
@@ -63,8 +72,34 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
 
+        // Tạo nền bo góc bằng code (đồng bộ màu với Menu)
+        GradientDrawable nenheader = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#FF9A44"), Color.parseColor("#FC6076")});
+        nenheader.setCornerRadius(dp(24));
+        llheader.setBackground(nenheader);
+        llform.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+        edittendm.setBackground(taoNen(Color.parseColor("#FFF8F3"), 10, "#E3D8CC"));
+
         list = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
+        // Mỗi danh mục là một thẻ bo góc, danh mục đang chọn có viền màu san hô
+        adapter = new ArrayAdapter<DanhMuc>(this, android.R.layout.simple_list_item_1, list) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                DanhMuc dm = getItem(position);
+                TextView txt = new TextView(QuanLyDanhMucActivity.this);
+                txt.setText(dm.tendm);
+                txt.setTextSize(16);
+                txt.setTypeface(null, Typeface.BOLD);
+                txt.setTextColor(Color.parseColor("#3E2C23"));
+                txt.setPadding(dp(16), dp(14), dp(16), dp(14));
+                if (dm.id == selectedId) {
+                    txt.setBackground(taoNen(Color.parseColor("#FFF1E6"), 14, "#FC6076"));
+                } else {
+                    txt.setBackground(taoNen(Color.WHITE, 14, "#EFE6DC"));
+                }
+                return txt;
+            }
+        };
         lvdanhsach.setAdapter(adapter);
 
         loadData();
@@ -145,6 +180,8 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                 DanhMuc dm = list.get(position);
                 selectedId = dm.id;
                 edittendm.setText(dm.tendm);
+                // Vẽ lại danh sách để tô viền danh mục đang chọn
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -163,6 +200,22 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    // Đổi dp sang pixel
+    private int dp(int giatri) {
+        return (int) (giatri * getResources().getDisplayMetrics().density);
+    }
+
+    // Tạo nền bo góc, vien là mã màu viền (null nếu không có viền)
+    private GradientDrawable taoNen(int mau, int bogoc, String vien) {
+        GradientDrawable nen = new GradientDrawable();
+        nen.setColor(mau);
+        nen.setCornerRadius(dp(bogoc));
+        if (vien != null) {
+            nen.setStroke(dp(1), Color.parseColor(vien));
+        }
+        return nen;
     }
 
     private void loadData() {

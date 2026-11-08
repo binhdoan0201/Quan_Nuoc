@@ -4,10 +4,13 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class DangKyActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
+    LinearLayout llheader, llform;
     EditText editusername, editpassword, editnhaplaipassword, editfullname, editphone;
     Button btndangky, btnquaylai;
     SQLiteDatabase mydatabase;
@@ -30,6 +34,8 @@ public class DangKyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dangky);
 
         //Bước 2: Ánh xạ biến giao diện
+        llheader = findViewById(R.id.llheader);
+        llform = findViewById(R.id.llform);
         editusername = findViewById(R.id.editusername);
         editpassword = findViewById(R.id.editpassword);
         editnhaplaipassword = findViewById(R.id.editnhaplaipassword);
@@ -40,6 +46,18 @@ public class DangKyActivity extends AppCompatActivity {
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
+
+        // Tạo nền bo góc bằng code (đồng bộ màu với Menu)
+        GradientDrawable nenheader = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#FF9A44"), Color.parseColor("#FC6076")});
+        nenheader.setCornerRadius(dp(24));
+        llheader.setBackground(nenheader);
+        llform.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+        editusername.setBackground(taoNen(Color.parseColor("#FFF8F3"), 12, "#E3D8CC"));
+        editpassword.setBackground(taoNen(Color.parseColor("#FFF8F3"), 12, "#E3D8CC"));
+        editnhaplaipassword.setBackground(taoNen(Color.parseColor("#FFF8F3"), 12, "#E3D8CC"));
+        editfullname.setBackground(taoNen(Color.parseColor("#FFF8F3"), 12, "#E3D8CC"));
+        editphone.setBackground(taoNen(Color.parseColor("#FFF8F3"), 12, "#E3D8CC"));
 
         btndangky.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +81,22 @@ public class DangKyActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    // Đổi dp sang pixel
+    private int dp(int giatri) {
+        return (int) (giatri * getResources().getDisplayMetrics().density);
+    }
+
+    // Tạo nền bo góc, vien là mã màu viền (null nếu không có viền)
+    private GradientDrawable taoNen(int mau, int bogoc, String vien) {
+        GradientDrawable nen = new GradientDrawable();
+        nen.setColor(mau);
+        nen.setCornerRadius(dp(bogoc));
+        if (vien != null) {
+            nen.setStroke(dp(1), Color.parseColor(vien));
+        }
+        return nen;
     }
 
     private void dangKy() {

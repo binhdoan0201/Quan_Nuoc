@@ -1,32 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFF8F3"
     android:orientation="vertical"
-    android:padding="16dp">
+    tools:context=".LichSuActivity">
 
-    <TextView
-        android:id="@+id/txttieude"
+    <LinearLayout
+        android:id="@+id/llheader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="LỊCH SỬ ĐƠN HÀNG"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="12dp" />
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-    <ListView
-        android:id="@+id/lvlichsu"
+        <TextView
+            android:id="@+id/txttieude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LỊCH SỬ ĐƠN HÀNG"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtgoiy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Chạm vào đơn để xem chi tiết"
+            android:textColor="#FFF1E6"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="12dp" />
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lvlichsu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp"
+            android:scrollbars="none" />
+
+        <TextView
+            android:id="@+id/txttrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Chưa có đơn hàng nào"
+            android:textColor="#B0A096"
+            android:textSize="15sp" />
+    </FrameLayout>
 
     <Button
         android:id="@+id/btnquaylai"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="QUAY LẠI" />
-
+        android:layout_height="52dp"
+        android:layout_margin="16dp"
+        android:backgroundTint="#FC6076"
+        android:text="QUAY LẠI"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="14dp" />
 </LinearLayout>

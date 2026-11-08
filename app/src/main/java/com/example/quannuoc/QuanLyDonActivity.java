@@ -5,13 +5,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +33,8 @@ import java.util.List;
 
 public class QuanLyDonActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
+    LinearLayout llheader;
+    TextView txttrong;
     ListView lvdonhang;
     Button btnquaylai;
     SQLiteDatabase mydatabase;
@@ -52,7 +58,7 @@ public class QuanLyDonActivity extends AppCompatActivity {
         }
     }
 
-    // Adapter hiển thị thông tin 2 dòng cho danh sách đơn hàng
+    // Adapter tuỳ chỉnh: mỗi đơn hàng là một thẻ có nhãn trạng thái
     class DonHangAdapter extends ArrayAdapter<DonHang> {
         public DonHangAdapter(Context context, List<DonHang> objects) {
             super(context, 0, objects);
@@ -60,19 +66,50 @@ public class QuanLyDonActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, parent, false);
-            }
-            TextView text1 = convertView.findViewById(android.R.id.text1);
-            TextView text2 = convertView.findViewById(android.R.id.text2);
             DonHang d = getItem(position);
-            if (d != null) {
-                text1.setText("Đơn #" + d.id + " - " + d.fullname + " (" + d.phone + ")");
-                text1.setTypeface(null, Typeface.BOLD);
-                String strTrangThai = layTenTrangThai(d.trangthai);
-                text2.setText(d.ngaydat + "  |  " + dinhDangTien(d.tongtien) + "  |  [" + strTrangThai + "]");
-            }
-            return convertView;
+            LinearLayout the = new LinearLayout(QuanLyDonActivity.this);
+            the.setOrientation(LinearLayout.VERTICAL);
+            the.setPadding(dp(14), dp(12), dp(14), dp(12));
+            the.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+
+            // Hàng trên: mã đơn và khách bên trái, nhãn trạng thái bên phải
+            LinearLayout hangtren = new LinearLayout(QuanLyDonActivity.this);
+            hangtren.setOrientation(LinearLayout.HORIZONTAL);
+            hangtren.setGravity(Gravity.CENTER_VERTICAL);
+
+            TextView txtkhach = new TextView(QuanLyDonActivity.this);
+            txtkhach.setText("Đơn #" + d.id + " - " + d.fullname);
+            txtkhach.setTextSize(16);
+            txtkhach.setTypeface(null, Typeface.BOLD);
+            txtkhach.setTextColor(Color.parseColor("#3E2C23"));
+            txtkhach.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            hangtren.addView(txtkhach);
+
+            TextView txttrangthai = new TextView(QuanLyDonActivity.this);
+            txttrangthai.setText(layTenTrangThai(d.trangthai));
+            txttrangthai.setTextSize(12);
+            txttrangthai.setTypeface(null, Typeface.BOLD);
+            txttrangthai.setTextColor(Color.WHITE);
+            txttrangthai.setPadding(dp(10), dp(4), dp(10), dp(4));
+            txttrangthai.setBackground(taoNen(layMauTrangThai(d.trangthai), 20, null));
+            hangtren.addView(txttrangthai);
+            the.addView(hangtren);
+
+            TextView txtsdt = new TextView(QuanLyDonActivity.this);
+            txtsdt.setText(d.phone + "   •   " + d.ngaydat);
+            txtsdt.setTextSize(13);
+            txtsdt.setTextColor(Color.parseColor("#9A8B7E"));
+            txtsdt.setPadding(0, dp(4), 0, 0);
+            the.addView(txtsdt);
+
+            TextView txttongtien = new TextView(QuanLyDonActivity.this);
+            txttongtien.setText(dinhDangTien(d.tongtien));
+            txttongtien.setTextSize(16);
+            txttongtien.setTypeface(null, Typeface.BOLD);
+            txttongtien.setTextColor(Color.parseColor("#FC6076"));
+            txttongtien.setPadding(0, dp(4), 0, 0);
+            the.addView(txttongtien);
+            return the;
         }
     }
 
@@ -83,15 +120,24 @@ public class QuanLyDonActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quanlydon);
 
         //Bước 2: Ánh xạ biến giao diện
+        llheader = findViewById(R.id.llheader);
+        txttrong = findViewById(R.id.txttrong);
         lvdonhang = findViewById(R.id.lvdonhang);
         btnquaylai = findViewById(R.id.btnquaylai);
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
 
+        // Tạo nền bo góc bằng code (đồng bộ màu với Menu)
+        GradientDrawable nenheader = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#FF9A44"), Color.parseColor("#FC6076")});
+        nenheader.setCornerRadius(dp(24));
+        llheader.setBackground(nenheader);
+
         listDon = new ArrayList<>();
         adapterDon = new DonHangAdapter(this, listDon);
         lvdonhang.setAdapter(adapterDon);
+        lvdonhang.setEmptyView(txttrong);
 
         loadDon();
 
@@ -119,6 +165,36 @@ public class QuanLyDonActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    // Đổi dp sang pixel
+    private int dp(int giatri) {
+        return (int) (giatri * getResources().getDisplayMetrics().density);
+    }
+
+    // Tạo nền bo góc, vien là mã màu viền (null nếu không có viền)
+    private GradientDrawable taoNen(int mau, int bogoc, String vien) {
+        GradientDrawable nen = new GradientDrawable();
+        nen.setColor(mau);
+        nen.setCornerRadius(dp(bogoc));
+        if (vien != null) {
+            nen.setStroke(dp(1), Color.parseColor(vien));
+        }
+        return nen;
+    }
+
+    // Màu nhãn theo trạng thái đơn
+    private int layMauTrangThai(int trangthai) {
+        switch (trangthai) {
+            case 0:
+                return Color.parseColor("#FF9A44");
+            case 1:
+                return Color.parseColor("#2EC4B6");
+            case 2:
+                return Color.parseColor("#4CAF50");
+            default:
+                return Color.parseColor("#9A8B7E");
+        }
     }
 
     private void loadDon() {

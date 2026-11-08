@@ -1,46 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFF8F3"
     android:orientation="vertical"
-    android:padding="16dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/txttieude"
+    <LinearLayout
+        android:id="@+id/llheader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Đăng nhập"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:padding="28dp">
 
-    <EditText
-        android:id="@+id/editusername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Tên đăng nhập"
-        android:inputType="text" />
+        <TextView
+            android:id="@+id/txttieude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đăng nhập"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/editpassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Mật khẩu"
-        android:inputType="textPassword" />
+        <TextView
+            android:id="@+id/txtchaomung"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Chào mừng bạn đến với Quán Nước"
+            android:textColor="#FFF1E6"
+            android:textSize="15sp" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btndangnhap"
+    <LinearLayout
+        android:id="@+id/llform"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="ĐĂNG NHẬP" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <Button
-        android:id="@+id/btndangky"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="ĐĂNG KÝ TÀI KHOẢN" />
+        <EditText
+            android:id="@+id/editusername"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="Tên đăng nhập"
+            android:inputType="text"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp" />
+
+        <EditText
+            android:id="@+id/editpassword"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:hint="Mật khẩu"
+            android:inputType="textPassword"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp" />
+
+        <Button
+            android:id="@+id/btndangnhap"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#FC6076"
+            android:text="ĐĂNG NHẬP"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="14dp" />
+
+        <Button
+            android:id="@+id/btndangky"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#2EC4B6"
+            android:text="ĐĂNG KÝ TÀI KHOẢN"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="14dp" />
+    </LinearLayout>
 </LinearLayout>

@@ -4,8 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,6 +34,7 @@ import java.util.List;
 
 public class QuanLyMonActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
+    LinearLayout llheader, llform;
     EditText edittenmon, editmota, editgia;
     Spinner spdanhmuc, spanh;
     ImageView imgxemtruoc;
@@ -96,7 +101,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
         }
     }
 
-    // Adapter tuỳ chỉnh để hiển thị món trên 2 dòng
+    // Adapter tuỳ chỉnh: mỗi món là một thẻ có ảnh
     class MonAdapter extends ArrayAdapter<Mon> {
         public MonAdapter(Context context, List<Mon> objects) {
             super(context, 0, objects);
@@ -104,19 +109,60 @@ public class QuanLyMonActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, parent, false);
-            }
-            TextView text1 = convertView.findViewById(android.R.id.text1);
-            TextView text2 = convertView.findViewById(android.R.id.text2);
             Mon m = getItem(position);
-            if (m != null) {
-                text1.setText(m.tenmon);
-                text1.setTypeface(null, Typeface.BOLD);
-                String tenDanhMuc = (m.tendm != null && !m.tendm.isEmpty()) ? m.tendm : "Chưa phân loại";
-                text2.setText("Giá: " + dinhDangTien(m.gia) + "  |  Danh mục: " + tenDanhMuc);
+            LinearLayout the = new LinearLayout(QuanLyMonActivity.this);
+            the.setOrientation(LinearLayout.HORIZONTAL);
+            the.setGravity(Gravity.CENTER_VERTICAL);
+            the.setPadding(dp(10), dp(10), dp(10), dp(10));
+            // Món đang được chọn thì viền màu san hô
+            if (m.id == selectedId) {
+                the.setBackground(taoNen(Color.parseColor("#FFF1E6"), 16, "#FC6076"));
+            } else {
+                the.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
             }
-            return convertView;
+
+            ImageView img = new ImageView(QuanLyMonActivity.this);
+            img.setLayoutParams(new LinearLayout.LayoutParams(dp(56), dp(56)));
+            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            img.setBackground(taoNen(Color.parseColor("#F1E9E0"), 12, null));
+            img.setClipToOutline(true);
+            int maanh = getResources().getIdentifier(m.hinhanh, "drawable", getPackageName());
+            if (maanh != 0) {
+                img.setImageResource(maanh);
+            } else {
+                img.setImageResource(android.R.drawable.ic_menu_gallery);
+            }
+            the.addView(img);
+
+            LinearLayout cot = new LinearLayout(QuanLyMonActivity.this);
+            cot.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams thamsocot = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            thamsocot.setMarginStart(dp(12));
+            cot.setLayoutParams(thamsocot);
+
+            TextView txtten = new TextView(QuanLyMonActivity.this);
+            txtten.setText(m.tenmon);
+            txtten.setTextSize(15);
+            txtten.setTypeface(null, Typeface.BOLD);
+            txtten.setTextColor(Color.parseColor("#3E2C23"));
+            cot.addView(txtten);
+
+            String tenDanhMuc = (m.tendm != null && !m.tendm.isEmpty()) ? m.tendm : "Chưa phân loại";
+            TextView txtdm = new TextView(QuanLyMonActivity.this);
+            txtdm.setText(tenDanhMuc);
+            txtdm.setTextSize(12);
+            txtdm.setTextColor(Color.parseColor("#9A8B7E"));
+            cot.addView(txtdm);
+
+            TextView txtgia = new TextView(QuanLyMonActivity.this);
+            txtgia.setText(dinhDangTien(m.gia));
+            txtgia.setTextSize(15);
+            txtgia.setTypeface(null, Typeface.BOLD);
+            txtgia.setTextColor(Color.parseColor("#FC6076"));
+            cot.addView(txtgia);
+
+            the.addView(cot);
+            return the;
         }
     }
 
@@ -127,6 +173,8 @@ public class QuanLyMonActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quanlymon);
 
         //Bước 2: Ánh xạ biến giao diện
+        llheader = findViewById(R.id.llheader);
+        llform = findViewById(R.id.llform);
         edittenmon = findViewById(R.id.edittenmon);
         editmota = findViewById(R.id.editmota);
         editgia = findViewById(R.id.editgia);
@@ -142,6 +190,18 @@ public class QuanLyMonActivity extends AppCompatActivity {
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
+
+        // Tạo nền bo góc bằng code (đồng bộ màu với Menu)
+        GradientDrawable nenheader = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#FF9A44"), Color.parseColor("#FC6076")});
+        nenheader.setCornerRadius(dp(24));
+        llheader.setBackground(nenheader);
+        llform.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+        edittenmon.setBackground(taoNen(Color.parseColor("#FFF8F3"), 10, "#E3D8CC"));
+        editgia.setBackground(taoNen(Color.parseColor("#FFF8F3"), 10, "#E3D8CC"));
+        editmota.setBackground(taoNen(Color.parseColor("#FFF8F3"), 10, "#E3D8CC"));
+        imgxemtruoc.setBackground(taoNen(Color.parseColor("#F1E9E0"), 10, null));
+        imgxemtruoc.setClipToOutline(true);
 
         // Khởi tạo Spinner danh mục (có mục Tất cả danh mục)
         listDanhMuc = new ArrayList<>();
@@ -380,6 +440,9 @@ public class QuanLyMonActivity extends AppCompatActivity {
                         break;
                     }
                 }
+
+                // Vẽ lại danh sách để tô viền món đang chọn
+                adapterMon.notifyDataSetChanged();
             }
         });
 
@@ -400,6 +463,22 @@ public class QuanLyMonActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    // Đổi dp sang pixel
+    private int dp(int giatri) {
+        return (int) (giatri * getResources().getDisplayMetrics().density);
+    }
+
+    // Tạo nền bo góc, vien là mã màu viền (null nếu không có viền)
+    private GradientDrawable taoNen(int mau, int bogoc, String vien) {
+        GradientDrawable nen = new GradientDrawable();
+        nen.setColor(mau);
+        nen.setCornerRadius(dp(bogoc));
+        if (vien != null) {
+            nen.setStroke(dp(1), Color.parseColor(vien));
+        }
+        return nen;
     }
 
     private void khoiTaoDanhSachAnh() {

@@ -4,12 +4,19 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,6 +31,8 @@ import java.util.ArrayList;
 
 public class LichSuActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
+    LinearLayout llheader;
+    TextView txttrong;
     ListView lvlichsu;
     Button btnquaylai;
 
@@ -42,11 +51,19 @@ public class LichSuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lichsu);
 
         //Bước 2: Ánh xạ biến giao diện
+        llheader = findViewById(R.id.llheader);
+        txttrong = findViewById(R.id.txttrong);
         lvlichsu = findViewById(R.id.lvlichsu);
         btnquaylai = findViewById(R.id.btnquaylai);
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
+
+        // Tạo nền bo góc bằng code (đồng bộ màu với Menu)
+        GradientDrawable nenheader = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#FF9A44"), Color.parseColor("#FC6076")});
+        nenheader.setCornerRadius(dp(24));
+        llheader.setBackground(nenheader);
 
         // Nhận Bundle truyền sang từ MenuActivity
         Bundle bundle = getIntent().getBundleExtra("goi");
@@ -57,8 +74,16 @@ public class LichSuActivity extends AppCompatActivity {
         mylist = new ArrayList<>();
         listDonHangId = new ArrayList<>();
         listTrangThai = new ArrayList<>();
-        myadapter = new ArrayAdapter<>(LichSuActivity.this, android.R.layout.simple_list_item_1, mylist);
+
+        // Mỗi đơn hàng là một thẻ bo góc có nhãn trạng thái
+        myadapter = new ArrayAdapter<String>(LichSuActivity.this, android.R.layout.simple_list_item_1, mylist) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                return taoTheDon(getItem(position), listTrangThai.get(position));
+            }
+        };
         lvlichsu.setAdapter(myadapter);
+        lvlichsu.setEmptyView(txttrong);
 
         // Load lịch sử đơn hàng
         loadLichSuDonHang();
@@ -89,6 +114,86 @@ public class LichSuActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    // Đổi dp sang pixel
+    private int dp(int giatri) {
+        return (int) (giatri * getResources().getDisplayMetrics().density);
+    }
+
+    // Tạo nền bo góc, vien là mã màu viền (null nếu không có viền)
+    private GradientDrawable taoNen(int mau, int bogoc, String vien) {
+        GradientDrawable nen = new GradientDrawable();
+        nen.setColor(mau);
+        nen.setCornerRadius(dp(bogoc));
+        if (vien != null) {
+            nen.setStroke(dp(1), Color.parseColor(vien));
+        }
+        return nen;
+    }
+
+    // Màu nhãn theo trạng thái đơn
+    private int getMauTrangThai(int trangthai) {
+        switch (trangthai) {
+            case 0:
+                return Color.parseColor("#FF9A44");
+            case 1:
+                return Color.parseColor("#2EC4B6");
+            case 2:
+                return Color.parseColor("#4CAF50");
+            default:
+                return Color.parseColor("#9A8B7E");
+        }
+    }
+
+    // Tạo thẻ đơn hàng từ chuỗi: Mã đơn / Ngày / Tổng tiền / Trạng thái (mỗi dòng một phần)
+    private View taoTheDon(String data, int trangthai) {
+        String[] phan = data.split("\n");
+        LinearLayout the = new LinearLayout(this);
+        the.setOrientation(LinearLayout.VERTICAL);
+        the.setPadding(dp(14), dp(12), dp(14), dp(12));
+        the.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+
+        // Hàng trên: mã đơn bên trái, nhãn trạng thái bên phải
+        LinearLayout hangtren = new LinearLayout(this);
+        hangtren.setOrientation(LinearLayout.HORIZONTAL);
+        hangtren.setGravity(Gravity.CENTER_VERTICAL);
+
+        TextView txtmadon = new TextView(this);
+        txtmadon.setText(phan[0]);
+        txtmadon.setTextSize(16);
+        txtmadon.setTypeface(null, Typeface.BOLD);
+        txtmadon.setTextColor(Color.parseColor("#3E2C23"));
+        txtmadon.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        hangtren.addView(txtmadon);
+
+        TextView txttrangthai = new TextView(this);
+        txttrangthai.setText(getTenTrangThai(trangthai));
+        txttrangthai.setTextSize(12);
+        txttrangthai.setTypeface(null, Typeface.BOLD);
+        txttrangthai.setTextColor(Color.WHITE);
+        txttrangthai.setPadding(dp(10), dp(4), dp(10), dp(4));
+        txttrangthai.setBackground(taoNen(getMauTrangThai(trangthai), 20, null));
+        hangtren.addView(txttrangthai);
+        the.addView(hangtren);
+
+        if (phan.length >= 3) {
+            TextView txtngay = new TextView(this);
+            txtngay.setText(phan[1]);
+            txtngay.setTextSize(13);
+            txtngay.setTextColor(Color.parseColor("#9A8B7E"));
+            txtngay.setPadding(0, dp(4), 0, 0);
+            the.addView(txtngay);
+
+            TextView txttongtien = new TextView(this);
+            txttongtien.setText(phan[2]);
+            txttongtien.setTextSize(16);
+            txttongtien.setTypeface(null, Typeface.BOLD);
+            txttongtien.setTextColor(Color.parseColor("#FC6076"));
+            txttongtien.setPadding(0, dp(4), 0, 0);
+            the.addView(txttongtien);
+        }
+        return the;
     }
 
     private void loadLichSuDonHang() {

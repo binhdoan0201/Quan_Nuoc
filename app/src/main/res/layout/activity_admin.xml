@@ -1,51 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFF8F3"
     android:orientation="vertical"
-    android:padding="16dp"
     tools:context=".AdminActivity">
 
-    <TextView
-        android:id="@+id/txttieude"
+    <LinearLayout
+        android:id="@+id/llheader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quản trị"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-    <TextView
-        android:id="@+id/txtxinchao"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:text="Xin chào" />
+        <TextView
+            android:id="@+id/txttieude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quản trị"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtxinchao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Xin chào"
+            android:textColor="#FFF1E6"
+            android:textSize="15sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnquanlymon"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="QUẢN LÝ MÓN" />
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#FC6076"
+        android:text="QUẢN LÝ MÓN"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:cornerRadius="16dp" />
 
     <Button
         android:id="@+id/btnquanlydanhmuc"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="QUẢN LÝ DANH MỤC" />
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#FF9A44"
+        android:text="QUẢN LÝ DANH MỤC"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:cornerRadius="16dp" />
 
     <Button
         android:id="@+id/btnquanlydon"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="QUẢN LÝ ĐƠN HÀNG" />
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#2EC4B6"
+        android:text="QUẢN LÝ ĐƠN HÀNG"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:cornerRadius="16dp" />
 
     <Button
         android:id="@+id/btnquaylai"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="ĐĂNG XUẤT" />
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#00000000"
+        android:text="ĐĂNG XUẤT"
+        android:textColor="#B0A096" />
 </LinearLayout>

@@ -4,23 +4,27 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class ChiTietMonActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
+    LinearLayout llheader;
+    LinearLayout llthongtin;
     ImageView imgmon;
     TextView txttenmon;
     TextView txtdanhmuc;
@@ -43,6 +47,8 @@ public class ChiTietMonActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chitietmon);
 
         //Bước 2: Ánh xạ biến giao diện
+        llheader = findViewById(R.id.llheader);
+        llthongtin = findViewById(R.id.llthongtin);
         imgmon = findViewById(R.id.imgmon);
         txttenmon = findViewById(R.id.txttenmon);
         txtdanhmuc = findViewById(R.id.txtdanhmuc);
@@ -65,23 +71,31 @@ public class ChiTietMonActivity extends AppCompatActivity {
             mamon = goi.getInt("mamon", -1);
         }
 
-        // Đọc thông tin món kèm tên danh mục và tên ảnh
-        Cursor c = mydatabase.rawQuery("SELECT m.tenmon, m.mota, m.gia, d.tendm, m.hinhanh FROM tblmon m LEFT JOIN tbldanhmuc d ON m.madm = d.id WHERE m.id = ?", new String[]{String.valueOf(mamon)});
-        String hinhanh = "";
+        // Tạo nền bo góc bằng code (đồng bộ màu với Menu)
+        GradientDrawable nenheader = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#FF9A44"), Color.parseColor("#FC6076")});
+        nenheader.setCornerRadius(dp(24));
+        llheader.setBackground(nenheader);
+        llthongtin.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+        imgmon.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+        imgmon.setClipToOutline(true);
+        editsoluong.setBackground(taoNen(Color.WHITE, 12, "#E3D8CC"));
+
+        // Đọc thông tin món kèm tên danh mục
+        Cursor c = mydatabase.rawQuery("SELECT m.tenmon, m.mota, m.gia, d.tendm FROM tblmon m LEFT JOIN tbldanhmuc d ON m.madm = d.id WHERE m.id = ?", new String[]{String.valueOf(mamon)});
         if (c.moveToFirst()) {
             txttenmon.setText(c.getString(0));
             txtmota.setText(c.getString(1));
             txtgia.setText("Giá: " + dinhDangTien(c.getInt(2)));
             txtdanhmuc.setText("Danh mục: " + c.getString(3));
-            hinhanh = c.getString(4);
         } else {
             Toast.makeText(this, "Không tìm thấy món", Toast.LENGTH_SHORT).show();
             finish();
         }
         c.close();
 
-        // Hiện ảnh món theo tên ảnh trong CSDL
-        hienAnh(hinhanh);
+        // Hiện ảnh món
+        hienAnh();
 
         // Giảm số lượng (tối thiểu 1)
         btngiam.setOnClickListener(new View.OnClickListener() {
@@ -129,25 +143,32 @@ public class ChiTietMonActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-                return insets;
-            }
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
         });
     }
 
-    // Hiện ảnh từ drawable theo tên ảnh lưu trong CSDL (cột hinhanh), nếu không có thì fallback mon + mamon
-    private void hienAnh(String tenanh) {
-        int maanh = 0;
-        if (tenanh != null && !tenanh.isEmpty()) {
-            maanh = getResources().getIdentifier(tenanh, "drawable", getPackageName());
+    // Đổi dp sang pixel
+    private int dp(int giatri) {
+        return (int) (giatri * getResources().getDisplayMetrics().density);
+    }
+
+    // Tạo nền bo góc, vien là mã màu viền (null nếu không có viền)
+    private GradientDrawable taoNen(int mau, int bogoc, String vien) {
+        GradientDrawable nen = new GradientDrawable();
+        nen.setColor(mau);
+        nen.setCornerRadius(dp(bogoc));
+        if (vien != null) {
+            nen.setStroke(dp(1), Color.parseColor(vien));
         }
-        if (maanh == 0) {
-            maanh = getResources().getIdentifier("mon" + mamon, "drawable", getPackageName());
-        }
+        return nen;
+    }
+
+    // Hiện ảnh từ drawable tên mon + mã món (mon1, mon2...), không có thì dùng ảnh mặc định
+    private void hienAnh() {
+        int maanh = getResources().getIdentifier("mon" + mamon, "drawable", getPackageName());
         if (maanh != 0) {
             imgmon.setImageResource(maanh);
         } else {

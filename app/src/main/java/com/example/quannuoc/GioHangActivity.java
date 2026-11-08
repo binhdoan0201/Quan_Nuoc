@@ -4,13 +4,18 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +35,10 @@ import java.util.Locale;
 
 public class GioHangActivity extends AppCompatActivity {
     //Bước 1: Khai báo biến giao diện
+    LinearLayout llheader;
+    LinearLayout lltongtien;
     TextView txttongtien;
+    TextView txttrong;
     ListView lvgiohang;
     Button btndathang, btnquaylai;
 
@@ -50,13 +58,23 @@ public class GioHangActivity extends AppCompatActivity {
         setContentView(R.layout.activity_giohang);
 
         //Bước 2: Ánh xạ biến giao diện
+        llheader = findViewById(R.id.llheader);
+        lltongtien = findViewById(R.id.lltongtien);
         txttongtien = findViewById(R.id.txttongtien);
+        txttrong = findViewById(R.id.txttrong);
         lvgiohang = findViewById(R.id.lvgiohang);
         btndathang = findViewById(R.id.btndathang);
         btnquaylai = findViewById(R.id.btnquaylai);
 
         //Bước 3: Viết code xử lý
         mydatabase = openOrCreateDatabase("quannuoc.db", MODE_PRIVATE, null);
+
+        // Tạo nền bo góc bằng code (đồng bộ màu với Menu)
+        GradientDrawable nenheader = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.parseColor("#FF9A44"), Color.parseColor("#FC6076")});
+        nenheader.setCornerRadius(dp(24));
+        llheader.setBackground(nenheader);
+        lltongtien.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
 
         // Nhận Bundle gửi sang từ MenuActivity hoặc ChiTietMonActivity
         Bundle bundle = getIntent().getBundleExtra("goi");
@@ -67,8 +85,16 @@ public class GioHangActivity extends AppCompatActivity {
         mylist = new ArrayList<>();
         listGioHangId = new ArrayList<>();
         listSoLuong = new ArrayList<>();
-        myadapter = new ArrayAdapter<>(GioHangActivity.this, android.R.layout.simple_list_item_1, mylist);
+
+        // Mỗi món trong giỏ là một thẻ bo góc
+        myadapter = new ArrayAdapter<String>(GioHangActivity.this, android.R.layout.simple_list_item_1, mylist) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                return taoTheMon(getItem(position));
+            }
+        };
         lvgiohang.setAdapter(myadapter);
+        lvgiohang.setEmptyView(txttrong);
 
         // Load danh sách giỏ hàng
         loadGioHang();
@@ -117,6 +143,55 @@ public class GioHangActivity extends AppCompatActivity {
                 return insets;
             }
         });
+    }
+
+    // Đổi dp sang pixel
+    private int dp(int giatri) {
+        return (int) (giatri * getResources().getDisplayMetrics().density);
+    }
+
+    // Tạo nền bo góc, vien là mã màu viền (null nếu không có viền)
+    private GradientDrawable taoNen(int mau, int bogoc, String vien) {
+        GradientDrawable nen = new GradientDrawable();
+        nen.setColor(mau);
+        nen.setCornerRadius(dp(bogoc));
+        if (vien != null) {
+            nen.setStroke(dp(1), Color.parseColor(vien));
+        }
+        return nen;
+    }
+
+    // Tạo thẻ món từ chuỗi: tên | SL | Đơn giá | Thành tiền
+    private View taoTheMon(String data) {
+        String[] phan = data.split(" \\| ");
+        LinearLayout the = new LinearLayout(this);
+        the.setOrientation(LinearLayout.VERTICAL);
+        the.setPadding(dp(14), dp(12), dp(14), dp(12));
+        the.setBackground(taoNen(Color.WHITE, 16, "#EFE6DC"));
+
+        TextView txtten = new TextView(this);
+        txtten.setText(phan[0]);
+        txtten.setTextSize(16);
+        txtten.setTypeface(null, Typeface.BOLD);
+        txtten.setTextColor(Color.parseColor("#3E2C23"));
+        the.addView(txtten);
+
+        if (phan.length >= 4) {
+            TextView txtchitiet = new TextView(this);
+            txtchitiet.setText(phan[1] + "   •   " + phan[2]);
+            txtchitiet.setTextSize(13);
+            txtchitiet.setTextColor(Color.parseColor("#9A8B7E"));
+            the.addView(txtchitiet);
+
+            TextView txtthanhtien = new TextView(this);
+            txtthanhtien.setText(phan[3]);
+            txtthanhtien.setTextSize(15);
+            txtthanhtien.setTypeface(null, Typeface.BOLD);
+            txtthanhtien.setTextColor(Color.parseColor("#FC6076"));
+            txtthanhtien.setPadding(0, dp(4), 0, 0);
+            the.addView(txtthanhtien);
+        }
+        return the;
     }
 
     private void loadGioHang() {
