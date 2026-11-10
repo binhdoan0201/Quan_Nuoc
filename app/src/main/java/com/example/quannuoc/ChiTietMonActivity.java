@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -81,21 +82,23 @@ public class ChiTietMonActivity extends AppCompatActivity {
         imgmon.setClipToOutline(true);
         editsoluong.setBackground(taoNen(Color.WHITE, 12, "#E3D8CC"));
 
-        // Đọc thông tin món kèm tên danh mục
-        Cursor c = mydatabase.rawQuery("SELECT m.tenmon, m.mota, m.gia, d.tendm FROM tblmon m LEFT JOIN tbldanhmuc d ON m.madm = d.id WHERE m.id = ?", new String[]{String.valueOf(mamon)});
+        // Đọc thông tin món kèm tên danh mục và tên ảnh
+        Cursor c = mydatabase.rawQuery("SELECT m.tenmon, m.mota, m.gia, d.tendm, m.hinhanh FROM tblmon m LEFT JOIN tbldanhmuc d ON m.madm = d.id WHERE m.id = ?", new String[]{String.valueOf(mamon)});
+        String hinhanh = "";
         if (c.moveToFirst()) {
             txttenmon.setText(c.getString(0));
             txtmota.setText(c.getString(1));
             txtgia.setText("Giá: " + dinhDangTien(c.getInt(2)));
             txtdanhmuc.setText("Danh mục: " + c.getString(3));
+            hinhanh = c.getString(4);
         } else {
             Toast.makeText(this, "Không tìm thấy món", Toast.LENGTH_SHORT).show();
             finish();
         }
         c.close();
 
-        // Hiện ảnh món
-        hienAnh();
+        // Hiện ảnh món theo tên ảnh trong CSDL hoặc theo mã món
+        hienAnh(hinhanh);
 
         // Giảm số lượng (tối thiểu 1)
         btngiam.setOnClickListener(new View.OnClickListener() {
@@ -143,10 +146,13 @@ public class ChiTietMonActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            }
         });
     }
 
@@ -166,9 +172,15 @@ public class ChiTietMonActivity extends AppCompatActivity {
         return nen;
     }
 
-    // Hiện ảnh từ drawable tên mon + mã món (mon1, mon2...), không có thì dùng ảnh mặc định
-    private void hienAnh() {
-        int maanh = getResources().getIdentifier("mon" + mamon, "drawable", getPackageName());
+    // Hiện ảnh từ drawable theo tên ảnh lưu trong CSDL (cột hinhanh), nếu không có thì fallback mon + mamon
+    private void hienAnh(String tenanh) {
+        int maanh = 0;
+        if (tenanh != null && !tenanh.isEmpty()) {
+            maanh = getResources().getIdentifier(tenanh, "drawable", getPackageName());
+        }
+        if (maanh == 0) {
+            maanh = getResources().getIdentifier("mon" + mamon, "drawable", getPackageName());
+        }
         if (maanh != 0) {
             imgmon.setImageResource(maanh);
         } else {

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -173,10 +174,13 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            }
         });
     }
 
@@ -210,7 +214,13 @@ public class MenuActivity extends AppCompatActivity {
         imgmon.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imgmon.setBackground(taoNen(Color.parseColor("#F1E9E0"), 12, null));
         imgmon.setClipToOutline(true);
-        int maanh = getResources().getIdentifier("mon" + dong[3], "drawable", getPackageName());
+        int maanh = 0;
+        if (dong.length > 4 && dong[4] != null && !dong[4].isEmpty()) {
+            maanh = getResources().getIdentifier(dong[4], "drawable", getPackageName());
+        }
+        if (maanh == 0) {
+            maanh = getResources().getIdentifier("mon" + dong[3], "drawable", getPackageName());
+        }
         if (maanh != 0) {
             imgmon.setImageResource(maanh);
         } else {
@@ -274,7 +284,7 @@ public class MenuActivity extends AppCompatActivity {
         dsmon.clear();
         String tukhoa = edittimkiem.getText().toString().trim();
         int madm = dsmadm.get(spdanhmuc.getSelectedItemPosition());
-        String sql = "SELECT m.id, m.tenmon, m.gia, d.tendm FROM tblmon m LEFT JOIN tbldanhmuc d ON m.madm = d.id WHERE m.tenmon LIKE ?";
+        String sql = "SELECT m.id, m.tenmon, m.gia, d.tendm, m.hinhanh FROM tblmon m LEFT JOIN tbldanhmuc d ON m.madm = d.id WHERE m.tenmon LIKE ?";
         String[] thamso;
         if (madm == 0) {
             thamso = new String[]{"%" + tukhoa + "%"};
@@ -284,7 +294,7 @@ public class MenuActivity extends AppCompatActivity {
         }
         Cursor c = mydatabase.rawQuery(sql, thamso);
         while (c.moveToNext()) {
-            dsmon.add(new String[]{c.getString(1), c.getString(3), dinhDangTien(c.getInt(2)), String.valueOf(c.getInt(0))});
+            dsmon.add(new String[]{c.getString(1), c.getString(3), dinhDangTien(c.getInt(2)), String.valueOf(c.getInt(0)), c.getString(4)});
             dsmamon.add(c.getInt(0));
         }
         c.close();
