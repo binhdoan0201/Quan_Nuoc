@@ -39,6 +39,7 @@ Danh sách chi tiết các món được bày bán.
 | `mota` | TEXT | | Mô tả chi tiết món |
 | `gia` | INTEGER | NOT NULL | Đơn giá hiện tại (đồng) |
 | `madm` | INTEGER | | Mã danh mục (tham chiếu `tbldanhmuc.id`) |
+| hinhanh | TEXT | | Tên định danh ảnh trong drawable (ví dụ: mon1, mon2...) |
 
 ### 1.4. Bảng `tblgiohang` (Giỏ hàng tạm thời)
 Lưu các món người dùng chọn trước khi tiến hành đặt hàng.

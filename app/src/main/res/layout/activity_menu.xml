@@ -1,24 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFF8F3"
     android:orientation="vertical"
-    android:padding="16dp"
     tools:context=".MenuActivity">
 
-    <TextView
-        android:id="@+id/txttieude"
+    <LinearLayout
+        android:id="@+id/llheader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Menu"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/txttieude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Menu"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtxinchao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Xin chào"
+            android:textColor="#FFF1E6"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llspinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <Spinner
+            android:id="@+id/spdanhmuc"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llsearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="4dp">
+
+        <EditText
+            android:id="@+id/edittimkiem"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Tìm món yêu thích..."
+            android:inputType="text"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btntim"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:backgroundTint="#FC6076"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="TÌM"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="10dp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lvmon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp"
+            android:scrollbars="none" />
+
+        <TextView
+            android:id="@+id/txttrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Không tìm thấy món nào"
+            android:textColor="#B0A096"
+            android:textSize="15sp" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btngiohang"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#FC6076"
+            android:text="GIỎ HÀNG"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="14dp" />
+
+        <Button
+            android:id="@+id/btnlichsu"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#2EC4B6"
+            android:text="LỊCH SỬ"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="14dp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnquaylai"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="QUAY LẠI" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#00000000"
+        android:text="ĐĂNG XUẤT"
+        android:textColor="#B0A096" />
 </LinearLayout>
